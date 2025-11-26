@@ -1,0 +1,826 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0"
+    />
+    <title>ZCASH DEV CONSOLE</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: 'Press Start 2P', cursive;
+        background-image: url('/assets/bg.jpg');
+        background-size: cover;
+        background-position: center;
+        background-attachment: fixed;
+        min-height: 100vh;
+        padding: 1.5rem;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        color: #fff;
+      }
+
+      .app-container {
+        width: 100%;
+        max-width: 1200px;
+      }
+
+      .content-card {
+        width: 100%;
+        background: rgba(0, 0, 0, 0.8);
+        border-radius: 16px;
+        padding: 1.5rem;
+        box-shadow: 0 0 20px rgba(0, 0, 0, 0.85);
+        border: 2px solid rgba(255, 255, 255, 0.15);
+      }
+
+      .hero {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        gap: 0.4rem;
+        margin-bottom: 1rem;
+      }
+
+      .round-logo {
+        width: 90px;
+        height: 90px;
+        border-radius: 50%;
+        background-color: rgba(255, 215, 0, 0.2);
+        border: 4px solid #fff;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        overflow: hidden;
+      }
+
+      .round-logo img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        border-radius: 50%;
+      }
+
+      .hero-subtitle-small {
+        font-size: 0.6rem;
+        text-shadow: 2px 2px 4px #111;
+        letter-spacing: 0.08em;
+      }
+
+      .main-title {
+        font-size: 1rem;
+        text-shadow: 4px 4px 8px #111;
+        letter-spacing: 0.1em;
+      }
+
+      .hero-subtitle-main {
+        font-size: 0.65rem;
+        opacity: 0.9;
+      }
+
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+        gap: 1rem;
+        margin-top: 1rem;
+      }
+
+      .panel {
+        background: rgba(0, 0, 0, 0.85);
+        border-radius: 12px;
+        border: 2px solid rgba(255, 255, 255, 0.15);
+        padding: 0.8rem 0.9rem;
+        font-size: 0.6rem;
+      }
+
+      .panel-title {
+        font-size: 0.7rem;
+        margin-bottom: 0.4rem;
+        text-shadow: 2px 2px 4px #000;
+      }
+
+      .panel-desc {
+        font-size: 0.55rem;
+        margin-bottom: 0.4rem;
+        opacity: 0.9;
+      }
+
+      .cmd-list {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.35rem;
+      }
+
+      .cmd-btn {
+        padding: 0.3rem 0.55rem;
+        border-radius: 999px;
+        border: 2px solid rgba(255, 255, 255, 0.6);
+        background: rgba(15, 15, 15, 0.95);
+        color: #fff;
+        font-size: 0.55rem;
+        cursor: pointer;
+        letter-spacing: 0.08em;
+        text-shadow: 1px 1px 2px #000;
+        transition: transform 0.1s ease, box-shadow 0.1s ease,
+          background 0.1s ease;
+      }
+
+      .cmd-btn:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+        background: rgba(30, 30, 30, 0.95);
+      }
+
+      .footer {
+        margin-top: 1.2rem;
+        font-size: 0.55rem;
+        text-align: center;
+        opacity: 0.85;
+      }
+
+      /* MENU */
+
+      .menu-button {
+        position: fixed;
+        top: 1rem;
+        left: 1rem;
+        width: 44px;
+        height: 44px;
+        border-radius: 999px;
+        border: 2px solid #fff;
+        background: rgba(0, 0, 0, 0.6);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        cursor: pointer;
+        box-shadow: 0 0 12px rgba(0, 0, 0, 0.7);
+        z-index: 1100;
+      }
+
+      .menu-button img {
+        width: 26px;
+        height: 26px;
+        object-fit: contain;
+      }
+
+      .sidebar-overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.7);
+        display: none;
+        justify-content: flex-end;
+        z-index: 1200;
+      }
+
+      .sidebar-overlay.active {
+        display: flex;
+      }
+
+      .sidebar {
+        width: 260px;
+        max-width: 80vw;
+        background: rgba(10, 10, 10, 0.95);
+        box-shadow: -4px 0 16px rgba(0, 0, 0, 0.8);
+        border-left: 2px solid rgba(255, 255, 255, 0.25);
+        padding: 1.5rem 1.25rem;
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+      }
+
+      .sidebar-title {
+        font-size: 0.8rem;
+        letter-spacing: 0.1em;
+        margin-bottom: 0.5rem;
+        text-shadow: 2px 2px 4px #000;
+      }
+
+      .sidebar-close {
+        cursor: pointer;
+        font-size: 0.9rem;
+        margin-left: auto;
+        margin-bottom: 0.5rem;
+        opacity: 0.8;
+      }
+
+      .sidebar-menu {
+        list-style: none;
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+      }
+
+      .sidebar-menu a {
+        display: block;
+        width: 100%;
+        text-align: left;
+        padding: 0.6rem 0.8rem;
+        font-size: 0.7rem;
+        border-radius: 999px;
+        border: 2px solid rgba(255, 255, 255, 0.5);
+        background: rgba(40, 40, 40, 0.9);
+        color: #fff;
+        cursor: pointer;
+        text-shadow: 1px 1px 2px #000;
+        letter-spacing: 0.08em;
+        transition: transform 0.1s ease, box-shadow 0.1s ease,
+          background 0.1s ease;
+        text-decoration: none;
+      }
+
+      .sidebar-menu a:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 0 12px rgba(255, 255, 255, 0.4);
+        background: rgba(60, 60, 60, 0.9);
+      }
+
+      /* MODAL */
+
+      .modal-overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.85);
+        display: none;
+        justify-content: center;
+        align-items: center;
+        z-index: 1300;
+      }
+
+      .modal-overlay.active {
+        display: flex;
+      }
+
+      .modal {
+        width: 100%;
+        max-width: 600px;
+        background: rgba(0, 0, 0, 0.96);
+        border-radius: 16px;
+        border: 2px solid rgba(255, 255, 255, 0.25);
+        padding: 1rem 1.2rem;
+        box-shadow: 0 0 24px rgba(0, 0, 0, 0.9);
+        font-size: 0.6rem;
+      }
+
+      .modal-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 0.55rem;
+      }
+
+      .modal-title {
+        font-size: 0.7rem;
+      }
+
+      .modal-close {
+        cursor: pointer;
+        font-size: 0.7rem;
+        opacity: 0.8;
+      }
+
+      .modal-body {
+        display: flex;
+        flex-direction: column;
+        gap: 0.45rem;
+      }
+
+      .modal-label {
+        font-size: 0.55rem;
+        margin-bottom: 0.15rem;
+      }
+
+      .modal-input,
+      .modal-textarea {
+        width: 100%;
+        padding: 0.4rem 0.5rem;
+        border-radius: 999px;
+        border: 2px solid rgba(255, 255, 255, 0.6);
+        background: rgba(0, 0, 0, 0.9);
+        color: #fff;
+        font-family: 'Press Start 2P', monospace;
+        font-size: 0.55rem;
+        outline: none;
+      }
+
+      .modal-textarea {
+        border-radius: 10px;
+        min-height: 60px;
+        resize: vertical;
+      }
+
+      .modal-footer {
+        margin-top: 0.6rem;
+        display: flex;
+        justify-content: space-between;
+        gap: 0.5rem;
+        align-items: center;
+      }
+
+      .modal-desc {
+        font-size: 0.55rem;
+        opacity: 0.9;
+      }
+
+      .modal-status {
+        font-size: 0.53rem;
+        min-height: 0.8rem;
+      }
+
+      .modal-status.error {
+        color: #ff6b6b;
+      }
+
+      .modal-status.ok {
+        color: #37ff7f;
+      }
+
+      .response-box {
+        margin-top: 0.4rem;
+        border-radius: 10px;
+        background: #000;
+        border: 1px solid rgba(0, 255, 128, 0.4);
+        padding: 0.4rem;
+      }
+
+      .response-box pre {
+        max-height: 260px;
+        overflow-y: auto;
+        font-family: 'Press Start 2P', monospace;
+        font-size: 0.5rem;
+        white-space: pre-wrap;
+        word-break: break-word;
+        color: #b5ffcf;
+      }
+
+      @media (max-width: 800px) {
+        .grid {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- MENU -->
+    <button id="menuButton" class="menu-button" aria-label="Open menu">
+      <img src="/assets/menu.png" alt="Menu" />
+    </button>
+
+    <div id="sidebarOverlay" class="sidebar-overlay">
+      <div class="sidebar">
+        <div id="sidebarClose" class="sidebar-close">X</div>
+        <div class="sidebar-title">ZORD PORTAL</div>
+        <ul class="sidebar-menu">
+          <li><a href="/assets-page/zordinals-theory.html">ZORDINALTHEORY</a></li>
+          <li><a href="/assets-page/index.html">ZORDINALS VIEWER</a></li>
+          <li><a href="/assets-page/explore.html">EXPLORE ZORDS</a></li>
+          <li><a href="/assets-page/znode-status.html">ZNODE STATUS</a></li>
+          <li><a href="/assets-page/dev-cli.html">CLI CONTROLS</a></li>
+          <li><a href="/assets-page/info.html">INFO</a></li>
+          <li><a href="https://zord.cash" target="_blank">ZORD.CASH</a></li>
+          <li>
+            <a href="https://x.com/Zordtoshi" target="_blank">Zordtoshi on X</a>
+          </li>
+          <li>
+            <a href="https://github.com/Zordtoshi" target="_blank"
+              >Zordtoshi GitHub</a
+            >
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="app-container">
+      <div class="content-card">
+        <div class="hero">
+          <div class="round-logo">
+            <img src="/assets/logo.jpg" alt="Zord Logo" />
+          </div>
+          <div class="hero-subtitle-small">ZCASH NODE CONTROL</div>
+          <div class="main-title">CLI CONTROLS</div>
+          <div class="hero-subtitle-main">
+            Dev console for common <span style="font-size:0.6rem;">zcash-cli</span> RPC commands
+          </div>
+        </div>
+
+        <div class="grid">
+          <div class="panel">
+            <div class="panel-title">Node / Chain</div>
+            <div class="panel-desc">
+              Quick view of chain height, sync status and peers.
+            </div>
+            <div class="cmd-list">
+              <button class="cmd-btn" data-cmd="getblockchaininfo">
+                getblockchaininfo
+              </button>
+              <button class="cmd-btn" data-cmd="getnetworkinfo">
+                getnetworkinfo
+              </button>
+              <button class="cmd-btn" data-cmd="getconnectioncount">
+                getconnectioncount
+              </button>
+              <button class="cmd-btn" data-cmd="getbestblockhash">
+                getbestblockhash
+              </button>
+            </div>
+          </div>
+
+          <div class="panel">
+            <div class="panel-title">Wallet & Addresses</div>
+            <div class="panel-desc">
+              Inspect wallet addresses, validity and private keys.
+            </div>
+            <div class="cmd-list">
+              <button class="cmd-btn" data-cmd="validateaddress">
+                validateaddress
+              </button>
+              <button class="cmd-btn" data-cmd="dumpprivkey">
+                dumpprivkey
+              </button>
+              <button class="cmd-btn" data-cmd="getbalance">
+                getbalance
+              </button>
+            </div>
+          </div>
+
+          <div class="panel">
+            <div class="panel-title">UTXOs</div>
+            <div class="panel-desc">
+              List and filter unspent outputs for debugging or tooling.
+            </div>
+            <div class="cmd-list">
+              <button class="cmd-btn" data-cmd="listunspent">
+                listunspent
+              </button>
+            </div>
+          </div>
+
+          <div class="panel">
+            <div class="panel-title">Transactions</div>
+            <div class="panel-desc">
+              Inspect wallet transactions or full raw tx JSON.
+            </div>
+            <div class="cmd-list">
+              <button class="cmd-btn" data-cmd="gettransaction">
+                gettransaction
+              </button>
+              <button class="cmd-btn" data-cmd="getrawtransaction">
+                getrawtransaction
+              </button>
+              <button class="cmd-btn" data-cmd="decoderawtransaction">
+                decoderawtransaction
+              </button>
+            </div>
+          </div>
+
+          <div class="panel">
+            <div class="panel-title">Blocks</div>
+            <div class="panel-desc">
+              Look up block hashes or full block JSON by height or hash.
+            </div>
+            <div class="cmd-list">
+              <button class="cmd-btn" data-cmd="getblockhash">
+                getblockhash
+              </button>
+              <button class="cmd-btn" data-cmd="getblock">
+                getblock
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="footer">
+          © <span id="yearSpan"></span> Zord.cash • Znode Dev Console
+        </div>
+      </div>
+    </div>
+
+    <!-- COMMAND MODAL -->
+    <div id="cmdModalOverlay" class="modal-overlay">
+      <div class="modal">
+        <div class="modal-header">
+          <div class="modal-title" id="cmdModalTitle">COMMAND</div>
+          <div id="cmdModalClose" class="modal-close">X</div>
+        </div>
+        <div class="modal-body">
+          <div class="modal-desc" id="cmdModalDesc"></div>
+
+          <div id="cmdArgsContainer"></div>
+
+          <div class="modal-footer">
+            <div class="modal-status" id="cmdModalStatus"></div>
+            <div>
+              <button id="cmdCancelBtn" class="cmd-btn" type="button">
+                CLOSE
+              </button>
+              <button id="cmdRunBtn" class="cmd-btn" type="button">
+                RUN
+              </button>
+            </div>
+          </div>
+
+          <div class="response-box">
+            <pre id="cmdResponsePre">// raw JSON response will appear here</pre>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      function $(id) {
+        return document.getElementById(id);
+      }
+
+      function setupMenu() {
+        const menuButton = $('menuButton');
+        const overlay = $('sidebarOverlay');
+        const closeBtn = $('sidebarClose');
+        if (!menuButton || !overlay || !closeBtn) return;
+        const close = () => overlay.classList.remove('active');
+        menuButton.addEventListener('click', () => {
+          overlay.classList.add('active');
+        });
+        closeBtn.addEventListener('click', close);
+        overlay.addEventListener('click', (e) => {
+          if (e.target === overlay) close();
+        });
+      }
+
+      const COMMANDS = {
+        getblockchaininfo: {
+          label: 'getblockchaininfo',
+          desc: 'Shows chain name, height, and sync progress.',
+          args: [],
+        },
+        getnetworkinfo: {
+          label: 'getnetworkinfo',
+          desc: 'General p2p/network info, node version, warnings.',
+          args: [],
+        },
+        getconnectioncount: {
+          label: 'getconnectioncount',
+          desc: 'Returns how many peers your node is connected to.',
+          args: [],
+        },
+        getbestblockhash: {
+          label: 'getbestblockhash',
+          desc: 'Hash of the latest known block.',
+          args: [],
+        },
+        validateaddress: {
+          label: 'validateaddress',
+          desc: 'Check if an address is valid and belongs to this wallet.',
+          args: [
+            {
+              name: 'address',
+              placeholder: 't1...',
+            },
+          ],
+        },
+        dumpprivkey: {
+          label: 'dumpprivkey',
+          desc: 'Return the WIF private key for a given transparent address.',
+          args: [
+            {
+              name: 'address',
+              placeholder: 't1...',
+            },
+          ],
+        },
+        getbalance: {
+          label: 'getbalance',
+          desc: 'Overall wallet balance (spendable funds).',
+          args: [],
+        },
+        listunspent: {
+          label: 'listunspent',
+          desc:
+            'List UTXOs. Leave addresses blank for all, or provide JSON like ["t1...","t1..."].',
+          args: [
+            {
+              name: 'minconf',
+              placeholder: 'min confirmations (e.g. 0)',
+              defaultValue: '0',
+            },
+            {
+              name: 'maxconf',
+              placeholder: 'max confirmations (e.g. 9999999)',
+              defaultValue: '9999999',
+            },
+            {
+              name: 'addresses',
+              placeholder: '["t1...","t1..."] or empty',
+              defaultValue: '',
+            },
+          ],
+        },
+        gettransaction: {
+          label: 'gettransaction',
+          desc:
+            'Wallet-view of a transaction (only txs involving this wallet).',
+          args: [
+            {
+              name: 'txid',
+              placeholder: 'transaction id',
+            },
+          ],
+        },
+        getrawtransaction: {
+          label: 'getrawtransaction',
+          desc:
+            'Network view of a transaction. Second arg is verbose flag (1 or 0).',
+          args: [
+            {
+              name: 'txid',
+              placeholder: 'transaction id',
+            },
+            {
+              name: 'verbose',
+              placeholder: '1 for JSON, 0 for hex',
+              defaultValue: '1',
+            },
+          ],
+        },
+        decoderawtransaction: {
+          label: 'decoderawtransaction',
+          desc:
+            'Decode a raw transaction hex string into JSON (use getrawtransaction txid 0 to get the hex first).',
+          args: [
+            {
+              name: 'hex',
+              placeholder: 'raw tx hex (NOT txid)',
+            },
+          ],
+        },
+        getblockhash: {
+          label: 'getblockhash',
+          desc: 'Block hash by height.',
+          args: [
+            {
+              name: 'height',
+              placeholder: 'block height',
+            },
+          ],
+        },
+        getblock: {
+          label: 'getblock',
+          desc: 'Block JSON by hash. Optional verbosity (0,1,2).',
+          args: [
+            {
+              name: 'blockhash',
+              placeholder: 'block hash',
+            },
+            {
+              name: 'verbosity',
+              placeholder: '0, 1 or 2 (default 1)',
+              defaultValue: '1',
+            },
+          ],
+        },
+      };
+
+      let currentCommandId = null;
+
+      function openCmdModal(cmdId) {
+        const def = COMMANDS[cmdId];
+        if (!def) return;
+
+        currentCommandId = cmdId;
+
+        $('cmdModalTitle').textContent = def.label;
+        $('cmdModalDesc').textContent =
+          def.desc +
+          '  Input types: numbers, true/false, or JSON (e.g. ["t1..."]).';
+        $('cmdModalStatus').textContent = '';
+        $('cmdModalStatus').classList.remove('error', 'ok');
+        $('cmdResponsePre').textContent =
+          '// raw JSON response will appear here';
+
+        const argsContainer = $('cmdArgsContainer');
+        argsContainer.innerHTML = '';
+        if (!def.args || !def.args.length) {
+          const p = document.createElement('p');
+          p.className = 'modal-label';
+          p.textContent = 'This command takes no parameters.';
+          argsContainer.appendChild(p);
+        } else {
+          def.args.forEach((a, idx) => {
+            const wrap = document.createElement('div');
+            const label = document.createElement('div');
+            label.className = 'modal-label';
+            label.textContent = `${idx + 1}. ${a.name}`;
+            const input =
+              cmdId === 'createrawtransaction'
+                ? document.createElement('textarea')
+                : document.createElement('input');
+            input.className =
+              cmdId === 'createrawtransaction'
+                ? 'modal-textarea'
+                : 'modal-input';
+            input.placeholder = a.placeholder || '';
+            if (a.defaultValue !== undefined) {
+              input.value = a.defaultValue;
+            }
+            input.dataset.argName = a.name;
+            wrap.appendChild(label);
+            wrap.appendChild(input);
+            argsContainer.appendChild(wrap);
+          });
+        }
+
+        $('cmdModalOverlay').classList.add('active');
+      }
+
+      function closeCmdModal() {
+        $('cmdModalOverlay').classList.remove('active');
+        currentCommandId = null;
+      }
+
+      async function runCurrentCommand() {
+        if (!currentCommandId) return;
+        const def = COMMANDS[currentCommandId];
+        const statusEl = $('cmdModalStatus');
+        statusEl.textContent = '';
+        statusEl.classList.remove('error', 'ok');
+
+        let args = [];
+        if (def.args && def.args.length) {
+          const argsContainer = $('cmdArgsContainer');
+          const inputs = argsContainer.querySelectorAll('input,textarea');
+          inputs.forEach((input) => {
+            const v = (input.value || '').trim();
+            if (v !== '') {
+              args.push(v);
+            }
+          });
+        }
+
+        statusEl.textContent = 'Running...';
+        $('cmdResponsePre').textContent = '// waiting for node response';
+
+        try {
+          const res = await fetch('/api/dev/cli/run', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              command: currentCommandId,
+              args,
+            }),
+          });
+          const data = await res.json().catch(() => ({}));
+          if (!res.ok) {
+            statusEl.textContent =
+              'Error: ' + (data.error || data.detail || res.status);
+            statusEl.classList.add('error');
+            $('cmdResponsePre').textContent = JSON.stringify(data, null, 2);
+            return;
+          }
+          statusEl.textContent = 'OK';
+          statusEl.classList.add('ok');
+          $('cmdResponsePre').textContent = JSON.stringify(data, null, 2);
+        } catch (err) {
+          console.error(err);
+          statusEl.textContent = 'Error: ' + err.message;
+          statusEl.classList.add('error');
+          $('cmdResponsePre').textContent = 'Error: ' + err.message;
+        }
+      }
+
+      document.addEventListener('DOMContentLoaded', () => {
+        const yearSpan = $('yearSpan');
+        if (yearSpan) yearSpan.textContent = new Date().getFullYear();
+
+        setupMenu();
+
+        // command buttons
+        document.querySelectorAll('.cmd-btn[data-cmd]').forEach((btn) => {
+          btn.addEventListener('click', () => {
+            const cmd = btn.getAttribute('data-cmd');
+            openCmdModal(cmd);
+          });
+        });
+
+        // modal controls
+        $('cmdModalClose').addEventListener('click', closeCmdModal);
+        $('cmdCancelBtn').addEventListener('click', closeCmdModal);
+        $('cmdRunBtn').addEventListener('click', runCurrentCommand);
+        $('cmdModalOverlay').addEventListener('click', (e) => {
+          if (e.target.id === 'cmdModalOverlay') closeCmdModal();
+        });
+      });
+
+    </script>
+  </body>
+</html>

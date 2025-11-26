@@ -1,0 +1,750 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0"
+    />
+    <title>Explore Zords</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: 'Press Start 2P', cursive;
+        background-image: url('/assets/bg.jpg');
+        background-size: cover;
+        background-position: center;
+        background-attachment: fixed;
+        min-height: 100vh;
+        padding: 1.5rem;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        color: #fff;
+      }
+
+      .app-container {
+        width: 100%;
+        max-width: 1100px;
+      }
+
+      .content-card {
+        width: 100%;
+        background: rgba(0, 0, 0, 0.75);
+        border-radius: 16px;
+        padding: 1.5rem;
+        box-shadow: 0 0 20px rgba(0, 0, 0, 0.85);
+        border: 2px solid rgba(255, 255, 255, 0.15);
+      }
+
+      /* HERO (logo + title centered) */
+
+      .hero {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0.5rem;
+        margin-bottom: 1.25rem;
+        text-align: center;
+      }
+
+      .hero-logo-wrap {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0.3rem;
+      }
+
+      .round-logo {
+        width: 100px;
+        height: 100px;
+        border-radius: 50%;
+        background-color: rgba(255, 215, 0, 0.2);
+        border: 4px solid #fff;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        overflow: hidden;
+      }
+
+      .round-logo img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        border-radius: 50%;
+      }
+
+      .hero-subtitle-small {
+        font-size: 0.6rem;
+        text-shadow: 2px 2px 4px #111;
+        letter-spacing: 0.08em;
+      }
+
+      .main-title {
+        font-size: 1.1rem;
+        text-shadow: 4px 4px 8px #111;
+        letter-spacing: 0.12em;
+      }
+
+      .subtitle {
+        font-size: 0.65rem;
+        opacity: 0.9;
+      }
+
+      .subtitle-second {
+        font-size: 0.6rem;
+        opacity: 0.9;
+        margin-top: 0.15rem;
+      }
+
+      .status-bar {
+        margin-top: 0.75rem;
+        font-size: 0.58rem;
+        text-align: center;
+        opacity: 0.9;
+      }
+
+      .status-bar.error {
+        color: #ff6b6b;
+      }
+
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 1rem;
+        margin-top: 0.75rem;
+      }
+
+      .card {
+        background: rgba(0, 0, 0, 0.9);
+        border-radius: 12px;
+        border: 2px solid rgba(255, 255, 255, 0.15);
+        padding: 0.6rem;
+        display: flex;
+        flex-direction: column;
+        cursor: pointer;
+        transition: transform 0.1s ease, box-shadow 0.1s ease,
+          border-color 0.1s ease;
+      }
+
+      .card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 0 12px rgba(255, 255, 255, 0.4);
+        border-color: rgba(255, 255, 255, 0.35);
+      }
+
+      .card-view {
+        position: relative;
+        width: 100%;
+        height: 180px;
+        border-radius: 8px;
+        overflow: hidden;
+        background: #000;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .card-view img,
+      .card-view iframe {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        border: none;
+        background: #000;
+      }
+
+      .card-view iframe {
+        width: 100%;
+        height: 100%;
+      }
+
+      /* little "i" badge */
+
+      .card-info-icon {
+        position: absolute;
+        right: 6px;
+        bottom: 6px;
+        width: 18px;
+        height: 18px;
+        border-radius: 999px;
+        border: 2px solid rgba(255, 255, 255, 0.9);
+        background: rgba(0, 0, 0, 0.8);
+        font-size: 0.55rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        pointer-events: auto;
+      }
+
+      .footer {
+        margin-top: 1rem;
+        font-size: 0.6rem;
+        text-align: center;
+        text-shadow: 1px 1px 2px #111;
+        opacity: 0.85;
+      }
+
+      /* MENU (same style) */
+
+      .menu-button {
+        position: fixed;
+        top: 1rem;
+        left: 1rem;
+        width: 44px;
+        height: 44px;
+        border-radius: 999px;
+        border: 2px solid #fff;
+        background: rgba(0, 0, 0, 0.6);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        cursor: pointer;
+        box-shadow: 0 0 12px rgba(0, 0, 0, 0.7);
+        z-index: 1100;
+      }
+
+      .menu-button img {
+        width: 26px;
+        height: 26px;
+        object-fit: contain;
+      }
+
+      .sidebar-overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.7);
+        display: none;
+        justify-content: flex-end;
+        z-index: 1200;
+      }
+
+      .sidebar-overlay.active {
+        display: flex;
+      }
+
+      .sidebar {
+        width: 260px;
+        max-width: 80vw;
+        background: rgba(10, 10, 10, 0.95);
+        box-shadow: -4px 0 16px rgba(0, 0, 0, 0.8);
+        border-left: 2px solid rgba(255, 255, 255, 0.25);
+        padding: 1.5rem 1.25rem;
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+      }
+
+      .sidebar-title {
+        font-size: 0.8rem;
+        letter-spacing: 0.1em;
+        margin-bottom: 0.5rem;
+        text-shadow: 2px 2px 4px #000;
+      }
+
+      .sidebar-close {
+        cursor: pointer;
+        font-size: 0.9rem;
+        margin-left: auto;
+        margin-bottom: 0.5rem;
+        opacity: 0.8;
+      }
+
+      .sidebar-menu {
+        list-style: none;
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+      }
+
+      .sidebar-menu a {
+        display: block;
+        width: 100%;
+        text-align: left;
+        padding: 0.6rem 0.8rem;
+        font-size: 0.7rem;
+        border-radius: 999px;
+        border: 2px solid rgba(255, 255, 255, 0.5);
+        background: rgba(40, 40, 40, 0.9);
+        color: #fff;
+        cursor: pointer;
+        text-shadow: 1px 1px 2px #000;
+        letter-spacing: 0.08em;
+        transition: transform 0.1s ease, box-shadow 0.1s ease,
+          background 0.1s ease;
+        text-decoration: none;
+      }
+
+      .sidebar-menu a:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 0 12px rgba(255, 255, 255, 0.4);
+        background: rgba(60, 60, 60, 0.9);
+      }
+
+      /* MODAL */
+
+      .modal-overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.9);
+        display: none;
+        justify-content: center;
+        align-items: center;
+        z-index: 1300;
+      }
+
+      .modal-overlay.active {
+        display: flex;
+      }
+
+      .modal {
+        width: 90%;
+        max-width: 1000px;
+        max-height: 90vh;
+        background: rgba(0, 0, 0, 0.98);
+        border-radius: 16px;
+        border: 2px solid rgba(255, 255, 255, 0.3);
+        padding: 0.75rem 1rem 1rem 1rem;
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+      }
+
+      .modal-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 0.65rem;
+      }
+
+      .modal-close {
+        cursor: pointer;
+        font-size: 0.8rem;
+        padding: 0.2rem 0.5rem;
+        border-radius: 999px;
+        border: 2px solid rgba(255, 255, 255, 0.7);
+        background: rgba(0, 0, 0, 0.7);
+      }
+
+      .modal-body {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        gap: 0.4rem;
+        overflow: hidden;
+      }
+
+      .modal-meta {
+        font-size: 0.55rem;
+        opacity: 0.9;
+        word-break: break-all;
+        line-height: 1.5;
+      }
+
+      .modal-view {
+        flex: 1;
+        margin-top: 0.3rem;
+        border-radius: 10px;
+        background: #000;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: auto;
+        height: 60vh;
+      }
+
+      .modal-view img,
+      .modal-view iframe {
+        max-width: 100%;
+        max-height: 100%;
+        object-fit: contain;
+        border-radius: 8px;
+        background: #000;
+      }
+
+      .modal-view iframe {
+        width: 100%;
+        height: 100%;
+        border: none;
+      }
+
+      .modal-json {
+        font-size: 0.55rem;
+        white-space: pre-wrap;
+        word-break: break-word;
+      }
+
+      .modal-footer {
+        margin-top: 0.5rem;
+        display: flex;
+        justify-content: flex-end;
+        gap: 0.5rem;
+      }
+
+      .btn {
+        padding: 0.4rem 0.7rem;
+        border-radius: 999px;
+        border: 2px solid rgba(255, 255, 255, 0.7);
+        background: rgba(0, 0, 0, 0.9);
+        color: #fff;
+        font-size: 0.6rem;
+        cursor: pointer;
+        letter-spacing: 0.08em;
+        text-shadow: 1px 1px 2px #000;
+        transition: transform 0.1s ease, box-shadow 0.1s ease,
+          background 0.1s ease;
+      }
+
+      .btn:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 0 10px rgba(255, 255, 255, 0.6);
+        background: rgba(20, 20, 20, 0.95);
+      }
+    </style>
+  </head>
+  <body>
+    <!-- MENU -->
+    <button id="menuButton" class="menu-button" aria-label="Open menu">
+      <img src="/assets/menu.png" alt="Menu" />
+    </button>
+
+    <div id="sidebarOverlay" class="sidebar-overlay">
+      <div class="sidebar">
+        <div id="sidebarClose" class="sidebar-close">X</div>
+        <div class="sidebar-title">ZORD LINKS</div>
+        <ul class="sidebar-menu">
+          <li><a href="/assets-page/zordinals-theory.html">ZORDINALTHEORY</a></li>
+          <li><a href="/assets-page/index.html">ZORDINALS VIEWER</a></li>
+          <li><a href="/assets-page/explore.html">EXPLORE ZORDS</a></li>
+          <li><a href="/assets-page/znode-status.html">ZNODE STATUS</a></li>
+          <li><a href="/assets-page/dev-cli.html">CLI CONTROLS</a></li>
+          <li><a href="/assets-page/info.html">INFO</a></li>
+          <li><a href="https://zord.cash" target="_blank">ZORD.CASH</a></li>
+          <li>
+            <a href="https://x.com/Zordtoshi" target="_blank">ZORDTOSHI X</a>
+          </li>
+          <li>
+            <a href="https://github.com/Zordtoshi" target="_blank"
+              >GITHUB</a
+            >
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- MODAL -->
+    <div id="modalOverlay" class="modal-overlay">
+      <div class="modal">
+        <div class="modal-header">
+          <div>INSCRIPTION VIEW</div>
+          <div id="modalClose" class="modal-close">X</div>
+        </div>
+        <div class="modal-body">
+          <div id="modalMeta" class="modal-meta"></div>
+          <div id="modalView" class="modal-view">
+            <img id="modalImg" style="display: none;" />
+            <iframe
+              id="modalFrame"
+              style="display: none;"
+              sandbox="allow-same-origin"
+            ></iframe>
+            <pre
+              id="modalJson"
+              class="modal-json"
+              style="display: none;"
+            ></pre>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button id="copyTxidBtn" class="btn">COPY TXID</button>
+          <button id="copyImgBtn" class="btn">COPY IMAGE</button>
+          <button id="downloadBtn" class="btn">DOWNLOAD</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="app-container">
+      <div class="content-card">
+        <div class="hero">
+          <div class="hero-logo-wrap">
+            <div class="round-logo">
+              <img src="/assets/logo.jpg" alt="Zord Logo" />
+            </div>
+            <div class="hero-subtitle-small">ZORDINALS EXPLORER</div>
+          </div>
+          <div class="main-title">EXPLORE ZORDS</div>
+          <div class="subtitle">Explore Zimmutable Zords</div>
+          <div class="subtitle-second">Explorer by Zordtoshi</div>
+        </div>
+
+        <div id="grid" class="grid">
+          <!-- populated by JS -->
+        </div>
+
+        <div id="statusBar" class="status-bar"></div>
+
+        <div class="footer">
+          © <span id="yearSpan"></span> Zord.cash • Zimmutable Zords
+        </div>
+      </div>
+    </div>
+
+    <script>
+      function $(id) {
+        return document.getElementById(id);
+      }
+
+      function setStatus(msg, isError) {
+        const bar = $('statusBar');
+        bar.textContent = msg || '';
+        if (isError) bar.classList.add('error');
+        else bar.classList.remove('error');
+      }
+
+      function setupMenu() {
+        const menuButton = $('menuButton');
+        const overlay = $('sidebarOverlay');
+        const closeBtn = $('sidebarClose');
+
+        if (!menuButton || !overlay || !closeBtn) return;
+
+        const close = () => overlay.classList.remove('active');
+
+        menuButton.addEventListener('click', () => {
+          overlay.classList.add('active');
+        });
+
+        closeBtn.addEventListener('click', close);
+        overlay.addEventListener('click', (e) => {
+          if (e.target === overlay) close();
+        });
+      }
+
+      function formatBytes(bytes) {
+        if (bytes === undefined || bytes === null) return 'unknown';
+        const num = Number(bytes);
+        if (!Number.isFinite(num)) return 'unknown';
+        const units = ['B', 'KB', 'MB', 'GB'];
+        let i = 0;
+        let val = num;
+        while (val >= 1024 && i < units.length - 1) {
+          val /= 1024;
+          i++;
+        }
+        return val.toFixed(1).replace(/\.0$/, '') + ' ' + units[i];
+      }
+
+      let items = [];
+      let modalCurrent = null;
+
+      async function loadZords() {
+        try {
+          setStatus('Loading Zords from /Zords...', false);
+          const res = await fetch('/api/zords/list', { cache: 'no-store' });
+          if (!res.ok) {
+            const t = await res.text().catch(() => '');
+            throw new Error(t || 'HTTP ' + res.status);
+          }
+          items = await res.json();
+          renderGrid();
+          setStatus(
+            items.length
+              ? `Loaded ${items.length} inscriptions.`
+              : 'No inscriptions found in /Zords.',
+            false
+          );
+        } catch (err) {
+          console.error(err);
+          setStatus('Error loading Zords: ' + err.message, true);
+        }
+      }
+
+      function renderGrid() {
+        const grid = $('grid');
+        grid.innerHTML = '';
+
+        if (!items.length) return;
+
+        for (const item of items) {
+          const card = document.createElement('div');
+          card.className = 'card';
+
+          const view = document.createElement('div');
+          view.className = 'card-view';
+
+          const isImage =
+            (item.contentType || '').toLowerCase().startsWith('image/');
+
+          if (isImage) {
+            const img = document.createElement('img');
+            img.src = item.url;
+            img.alt = item.inscriptionId;
+            view.appendChild(img);
+          } else if (
+            item.contentType &&
+            (item.contentType.includes('html') ||
+              item.contentType.includes('svg'))
+          ) {
+            const frame = document.createElement('iframe');
+            frame.src = item.url;
+            frame.setAttribute('sandbox', 'allow-same-origin');
+            view.appendChild(frame);
+          } else {
+            const pre = document.createElement('pre');
+            pre.style.fontSize = '0.5rem';
+            pre.style.padding = '0.3rem';
+            pre.textContent = item.contentType || 'application/octet-stream';
+            view.appendChild(pre);
+          }
+
+          // "i" badge
+          const infoIcon = document.createElement('div');
+          infoIcon.className = 'card-info-icon';
+          infoIcon.textContent = 'i';
+          view.appendChild(infoIcon);
+
+          card.appendChild(view);
+
+          const open = (e) => {
+            // so clicking the badge doesn't re-bubble strangely later
+            e.stopPropagation();
+            openModal(item);
+          };
+
+          infoIcon.addEventListener('click', open);
+          card.addEventListener('click', (e) => {
+            e.stopPropagation();
+            openModal(item);
+          });
+
+          grid.appendChild(card);
+        }
+      }
+
+      function openModal(item) {
+        modalCurrent = item;
+
+        const overlay = $('modalOverlay');
+        const meta = $('modalMeta');
+        const img = $('modalImg');
+        const frame = $('modalFrame');
+        const json = $('modalJson');
+
+        const inscriptionId = item.inscriptionId || item.txid;
+        const type = item.contentType || 'application/octet-stream';
+        const sizeText = formatBytes(item.size);
+
+        meta.innerHTML =
+          'TXID: ' +
+          inscriptionId +
+          '<br>TYPE: ' +
+          type +
+          '<br>SIZE: ' +
+          sizeText;
+
+        img.style.display = 'none';
+        frame.style.display = 'none';
+        json.style.display = 'none';
+
+        const t = type.toLowerCase();
+
+        if (t.startsWith('image/')) {
+          img.src = item.url;
+          img.alt = inscriptionId;
+          img.style.display = 'block';
+        } else if (t.includes('json') || t.includes('text')) {
+          fetch(item.url)
+            .then((r) => r.text())
+            .then((txt) => {
+              json.textContent = txt;
+            })
+            .catch(() => {
+              json.textContent = 'Failed to load text content.';
+            });
+          json.style.display = 'block';
+        } else {
+          frame.src = item.url;
+          frame.setAttribute('sandbox', 'allow-same-origin');
+          frame.style.display = 'block';
+        }
+
+        $('copyImgBtn').disabled = !t.startsWith('image/');
+        overlay.classList.add('active');
+      }
+
+      function closeModal() {
+        const overlay = $('modalOverlay');
+        const img = $('modalImg');
+        const frame = $('modalFrame');
+        const json = $('modalJson');
+        overlay.classList.remove('active');
+        img.src = '';
+        frame.removeAttribute('src');
+        json.textContent = '';
+        modalCurrent = null;
+      }
+
+      async function copyTxid() {
+        if (!modalCurrent) return;
+        const id = modalCurrent.inscriptionId || modalCurrent.txid;
+        try {
+          await navigator.clipboard.writeText(id);
+          setStatus('TXID copied.', false);
+        } catch {
+          setStatus('Failed to copy TXID.', true);
+        }
+      }
+
+      async function copyImage() {
+        if (!modalCurrent) return;
+        const type = (modalCurrent.contentType || '').toLowerCase();
+        if (!type.startsWith('image/')) return;
+        try {
+          const resp = await fetch(modalCurrent.url);
+          const blob = await resp.blob();
+          const item = new ClipboardItem({ [blob.type]: blob });
+          await navigator.clipboard.write([item]);
+          setStatus('Image copied to clipboard.', false);
+        } catch (err) {
+          console.error(err);
+          setStatus('Copy image failed (browser may not support).', true);
+        }
+      }
+
+      function downloadCurrent() {
+        if (!modalCurrent) return;
+        const a = document.createElement('a');
+        a.href = modalCurrent.url;
+        a.download = modalCurrent.filename || modalCurrent.txid;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+      }
+
+      document.addEventListener('DOMContentLoaded', () => {
+        const yearSpan = $('yearSpan');
+        if (yearSpan) yearSpan.textContent = new Date().getFullYear();
+
+        setupMenu();
+        loadZords();
+
+        $('modalClose').addEventListener('click', closeModal);
+        $('modalOverlay').addEventListener('click', (e) => {
+          if (e.target === $('modalOverlay')) closeModal();
+        });
+        $('copyTxidBtn').addEventListener('click', copyTxid);
+        $('copyImgBtn').addEventListener('click', copyImage);
+        $('downloadBtn').addEventListener('click', downloadCurrent);
+      });
+    </script>
+  </body>
+</html>

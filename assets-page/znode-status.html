@@ -1,0 +1,1909 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0"
+    />
+    <title>ZNODE STATUS</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: 'Press Start 2P', cursive;
+        background-image: url('/assets/bg.jpg');
+        background-size: cover;
+        background-position: center;
+        background-attachment: fixed;
+        min-height: 100vh;
+        padding: 1.5rem;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        color: #fff;
+      }
+
+      .app-container {
+        width: 100%;
+        max-width: 1100px;
+      }
+
+      .content-card {
+        width: 100%;
+        background: rgba(0, 0, 0, 0.75);
+        border-radius: 16px;
+        padding: 1.5rem;
+        box-shadow: 0 0 20px rgba(0, 0, 0, 0.85);
+        border: 2px solid rgba(255, 255, 255, 0.15);
+      }
+
+      /* HEADER / HERO */
+
+      .hero {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        gap: 0.4rem;
+        margin-bottom: 1rem;
+      }
+
+      .hero-logo-wrap {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0.3rem;
+      }
+
+      .round-logo {
+        width: 100px;
+        height: 100px;
+        border-radius: 50%;
+        background-color: rgba(255, 215, 0, 0.2);
+        border: 4px solid #fff;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        overflow: hidden;
+      }
+
+      .round-logo img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        border-radius: 50%;
+      }
+
+      .hero-subtitle-small {
+        font-size: 0.6rem;
+        text-shadow: 2px 2px 4px #111;
+        letter-spacing: 0.08em;
+      }
+
+      .main-title {
+        font-size: 1.1rem;
+        text-shadow: 4px 4px 8px #111;
+        letter-spacing: 0.12em;
+      }
+
+      .hero-subtitle-main {
+        font-size: 0.65rem;
+        opacity: 0.9;
+      }
+
+      .status-actions {
+        margin-top: 0.6rem;
+        display: flex;
+        gap: 0.75rem;
+        align-items: center;
+        justify-content: center;
+        flex-wrap: wrap;
+      }
+
+      .status-indicator {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 0.7rem;
+      }
+
+      .status-dot {
+        width: 12px;
+        height: 12px;
+        border-radius: 999px;
+        background: red;
+        box-shadow: 0 0 10px red;
+      }
+
+      .status-dot.online {
+        background: #00ff7f;
+        box-shadow: 0 0 10px #00ff7f;
+      }
+
+      .btn-small {
+        padding: 0.35rem 0.7rem;
+        border-radius: 999px;
+        border: 2px solid rgba(255, 255, 255, 0.7);
+        background: rgba(0, 0, 0, 0.9);
+        color: #fff;
+        font-size: 0.6rem;
+        cursor: pointer;
+        letter-spacing: 0.08em;
+        text-shadow: 1px 1px 2px #000;
+        transition: transform 0.1s ease, box-shadow 0.1s ease,
+          background 0.1s ease;
+      }
+
+      .btn-small:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 0 10px rgba(255, 255, 255, 0.6);
+        background: rgba(20, 20, 20, 0.95);
+      }
+
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+        gap: 1rem;
+        margin-top: 1rem;
+      }
+
+      .panel {
+        background: rgba(0, 0, 0, 0.85);
+        border-radius: 12px;
+        border: 2px solid rgba(255, 255, 255, 0.15);
+        padding: 0.75rem 0.9rem;
+        font-size: 0.6rem;
+      }
+
+      .panel-wide {
+        grid-column: span 2;
+      }
+
+      .panel-title-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 0.5rem;
+        margin-bottom: 0.5rem;
+      }
+
+      .panel-title {
+        font-size: 0.7rem;
+        text-shadow: 2px 2px 4px #000;
+      }
+
+      .panel-actions {
+        display: flex;
+        gap: 0.3rem;
+        flex-wrap: wrap;
+      }
+
+      .panel pre {
+        white-space: pre-wrap;
+        word-break: break-word;
+        font-size: 0.55rem;
+      }
+
+      .panel-hint {
+        margin-top: 0.3rem;
+        font-size: 0.5rem;
+        opacity: 0.8;
+      }
+
+      .table-scroll {
+        max-height: 260px;
+        overflow-y: auto;
+      }
+
+      .table-scroll table {
+        width: 100%;
+        border-collapse: collapse;
+        table-layout: fixed;
+        font-size: 0.55rem;
+      }
+
+      .table-scroll th,
+      .table-scroll td {
+        padding: 0.25rem 0.2rem;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+        text-align: left;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      .table-scroll tbody tr {
+        cursor: pointer;
+      }
+
+      .table-scroll tbody tr:hover {
+        background: rgba(255, 255, 255, 0.06);
+      }
+
+      .scroll-pre {
+        max-height: 260px;
+        overflow-y: auto;
+        font-size: 0.55rem;
+      }
+
+      .footer {
+        margin-top: 1rem;
+        font-size: 0.6rem;
+        text-align: center;
+        text-shadow: 1px 1px 2px #111;
+        opacity: 0.85;
+      }
+
+      /* Inline TX checker embed */
+
+      .tx-embed-wrap {
+        margin-top: 0.5rem;
+        display: none;
+        flex-direction: column;
+        gap: 0.4rem;
+      }
+
+      .tx-embed-header {
+        display: flex;
+        gap: 0.4rem;
+        align-items: center;
+      }
+
+      .tx-embed-row {
+        display: flex;
+        gap: 0.4rem;
+        min-height: 0;
+      }
+
+      .tx-embed-panel {
+        flex: 1;
+        border-radius: 10px;
+        background: #000;
+        border: 1px solid rgba(0, 255, 128, 0.4);
+        padding: 0.4rem;
+        font-size: 0.55rem;
+        overflow: hidden;
+      }
+
+      .tx-embed-title {
+        font-size: 0.55rem;
+        margin-bottom: 0.3rem;
+        color: #37ff7f;
+      }
+
+      .tx-embed-panel pre {
+        white-space: pre-wrap;
+        word-break: break-word;
+        max-height: 200px;
+        overflow-y: auto;
+        font-family: 'Press Start 2P', monospace;
+        font-size: 0.52rem;
+        color: #b5ffcf;
+      }
+
+      /* MENU */
+
+      .menu-button {
+        position: fixed;
+        top: 1rem;
+        left: 1rem;
+        width: 44px;
+        height: 44px;
+        border-radius: 999px;
+        border: 2px solid #fff;
+        background: rgba(0, 0, 0, 0.6);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        cursor: pointer;
+        box-shadow: 0 0 12px rgba(0, 0, 0, 0.7);
+        z-index: 1100;
+      }
+
+      .menu-button img {
+        width: 26px;
+        height: 26px;
+        object-fit: contain;
+      }
+
+      .sidebar-overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.7);
+        display: none;
+        justify-content: flex-end;
+        z-index: 1200;
+      }
+
+      .sidebar-overlay.active {
+        display: flex;
+      }
+
+      .sidebar {
+        width: 260px;
+        max-width: 80vw;
+        background: rgba(10, 10, 10, 0.95);
+        box-shadow: -4px 0 16px rgba(0, 0, 0, 0.8);
+        border-left: 2px solid rgba(255, 255, 255, 0.25);
+        padding: 1.5rem 1.25rem;
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+      }
+
+      .sidebar-title {
+        font-size: 0.8rem;
+        letter-spacing: 0.1em;
+        margin-bottom: 0.5rem;
+        text-shadow: 2px 2px 4px #000;
+      }
+
+      .sidebar-close {
+        cursor: pointer;
+        font-size: 0.9rem;
+        margin-left: auto;
+        margin-bottom: 0.5rem;
+        opacity: 0.8;
+      }
+
+      .sidebar-menu {
+        list-style: none;
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+      }
+
+      .sidebar-menu a {
+        display: block;
+        width: 100%;
+        text-align: left;
+        padding: 0.6rem 0.8rem;
+        font-size: 0.7rem;
+        border-radius: 999px;
+        border: 2px solid rgba(255, 255, 255, 0.5);
+        background: rgba(40, 40, 40, 0.9);
+        color: #fff;
+        cursor: pointer;
+        text-shadow: 1px 1px 2px #000;
+        letter-spacing: 0.08em;
+        transition: transform 0.1s ease, box-shadow 0.1s ease,
+          background 0.1s ease;
+        text-decoration: none;
+      }
+
+      .sidebar-menu a:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 0 12px rgba(255, 255, 255, 0.4);
+        background: rgba(60, 60, 60, 0.9);
+      }
+
+      /* MODALS / OVERLAYS */
+
+      .modal-overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.8);
+        display: none;
+        justify-content: center;
+        align-items: center;
+        z-index: 1300;
+      }
+
+      .modal-overlay.active {
+        display: flex;
+      }
+
+      .modal {
+        width: 100%;
+        max-width: 420px;
+        background: rgba(0, 0, 0, 0.95);
+        border-radius: 16px;
+        border: 2px solid rgba(255, 255, 255, 0.2);
+        padding: 1rem 1.2rem;
+        box-shadow: 0 0 20px rgba(0, 0, 0, 0.9);
+        font-size: 0.6rem;
+      }
+
+      .modal-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 0.75rem;
+      }
+
+      .modal-title {
+        font-size: 0.7rem;
+      }
+
+      .modal-close {
+        cursor: pointer;
+        font-size: 0.7rem;
+        opacity: 0.8;
+      }
+
+      .modal-body {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+      }
+
+      .modal-label {
+        font-size: 0.55rem;
+        margin-bottom: 0.15rem;
+      }
+
+      .modal-input,
+      .modal-textarea,
+      .modal-select {
+        width: 100%;
+        padding: 0.4rem 0.5rem;
+        border-radius: 999px;
+        border: 2px solid rgba(255, 255, 255, 0.5);
+        background: rgba(0, 0, 0, 0.85);
+        color: #fff;
+        font-family: 'Press Start 2P', monospace;
+        font-size: 0.55rem;
+        outline: none;
+      }
+
+      .modal-textarea {
+        border-radius: 10px;
+        min-height: 60px;
+        resize: vertical;
+      }
+
+      .modal-footer {
+        margin-top: 0.75rem;
+        display: flex;
+        justify-content: flex-end;
+        gap: 0.5rem;
+      }
+
+      .modal-hint {
+        font-size: 0.5rem;
+        opacity: 0.85;
+      }
+
+      .break-all {
+        word-break: break-all;
+      }
+
+      .modal-toggle-row {
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
+        font-size: 0.55rem;
+      }
+
+      .modal-checkbox {
+        width: 14px;
+        height: 14px;
+      }
+
+      .status-bar {
+        margin-top: 0.75rem;
+        font-size: 0.58rem;
+        text-align: center;
+        opacity: 0.9;
+      }
+
+      .status-bar.error {
+        color: #ff6b6b;
+      }
+
+      /* confirmations green */
+
+      .confirmations-ok {
+        color: #37ff7f;
+        text-shadow: 0 0 4px rgba(55, 255, 127, 0.8);
+      }
+
+      @media (max-width: 800px) {
+        .grid {
+          grid-template-columns: 1fr;
+        }
+
+        .panel-wide {
+          grid-column: span 1;
+        }
+
+        .tx-embed-row {
+          flex-direction: column;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- MENU -->
+    <button id="menuButton" class="menu-button" aria-label="Open menu">
+      <img src="/assets/menu.png" alt="Menu" />
+    </button>
+
+    <div id="sidebarOverlay" class="sidebar-overlay">
+      <div class="sidebar">
+        <div id="sidebarClose" class="sidebar-close">X</div>
+        <div class="sidebar-title">ZORD LINKS</div>
+        <ul class="sidebar-menu">
+          <li><a href="/assets-page/zordinals-theory.html">ZORDINALTHEORY</a></li>
+          <li><a href="/assets-page/index.html">ZORDINALS VIEWER</a></li>
+          <li><a href="/assets-page/explore.html">EXPLORE ZORDS</a></li>
+          <li><a href="/assets-page/znode-status.html">ZNODE STATUS</a></li>
+          <li><a href="/assets-page/dev-cli.html">CLI CONTROLS</a></li>
+          <li><a href="/assets-page/info.html">INFO</a></li>
+          <li><a href="https://zord.cash" target="_blank">ZORD.CASH</a></li>
+          <li>
+            <a href="https://x.com/Zordtoshi" target="_blank">ZORDTOSHI X</a>
+          </li>
+          <li>
+            <a href="https://github.com/Zordtoshi" target="_blank"
+              >GITHUB</a
+            >
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="app-container">
+      <div class="content-card">
+        <div class="hero">
+          <div class="hero-logo-wrap">
+            <div class="round-logo">
+              <img src="/assets/logo.jpg" alt="Zord Logo" />
+            </div>
+            <div class="hero-subtitle-small">ZCASH NODE CONTROL</div>
+          </div>
+          <div class="main-title">ZNODE STATUS</div>
+          <div class="hero-subtitle-main">
+            Node status and controls by Zordtoshi
+          </div>
+
+          <div class="status-actions">
+            <div class="status-indicator">
+              <div id="statusDot" class="status-dot"></div>
+              <span id="statusText">Checking...</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="grid">
+          <div class="panel">
+            <div class="panel-title">Node Overview</div>
+            <pre id="overviewPre">Loading...</pre>
+          </div>
+
+          <div class="panel">
+            <div class="panel-title">Connections</div>
+            <pre id="connectionsPre">Loading...</pre>
+          </div>
+
+          <div class="panel">
+            <div class="panel-title">Mempool</div>
+            <pre id="mempoolPre" class="scroll-pre">Loading...</pre>
+          </div>
+
+          <div class="panel">
+            <div class="panel-title-row">
+              <div class="panel-title">Wallet Balances</div>
+              <div class="panel-actions">
+                <button
+                  id="walletRefreshBtn"
+                  class="btn-small"
+                  title="Refresh balances"
+                >
+                  ⟳
+                </button>
+                <button id="importKeyBtn" class="btn-small">
+                  IMPORT KEY
+                </button>
+                <button id="sendZecBtn" class="btn-small">SEND ZEC</button>
+              </div>
+            </div>
+            <div class="table-scroll">
+              <table id="walletTable">
+                <thead>
+                  <tr>
+                    <th>Wallet</th>
+                    <th>Balance</th>
+                    <th>Unconf</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td colspan="3">Loading...</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="panel-hint">
+              Hint: imported keys share the same underlying wallet; balances are
+              total.
+            </div>
+
+            <!-- UTXO section -->
+            <div style="margin-top: 0.6rem;">
+              <div class="panel-title" style="font-size: 0.6rem;">
+                Wallet UTXOs
+              </div>
+              <div class="panel-hint">
+                Tick the box to choose UTXOs for sending. Click a row to see
+                full UTXO details.
+              </div>
+              <div style="margin: 0.35rem 0;">
+                <select
+                  id="utxoWalletFilter"
+                  class="modal-select"
+                  style="max-width: 260px;"
+                >
+                  <option value="all">All wallets</option>
+                </select>
+              </div>
+              <div
+                id="utxoListContainer"
+                class="table-scroll"
+                style="max-height: 160px;"
+              >
+                <table>
+                  <thead>
+                    <tr>
+                      <th style="width: 2rem;">Sel</th>
+                      <th>Address</th>
+                      <th>TXID</th>
+                      <th>Amt</th>
+                    </tr>
+                  </thead>
+                  <tbody id="utxoListBody">
+                    <tr>
+                      <td colspan="4">No UTXO data.</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <!-- Wallet transactions: wide panel -->
+          <div class="panel panel-wide">
+            <div class="panel-title-row">
+              <div class="panel-title">Wallet Transactions</div>
+              <div class="panel-actions">
+                <button id="historyRefreshBtn" class="btn-small">
+                  CHECK STATUS
+                </button>
+                <button id="txInlineCheckBtn" class="btn-small">
+                  CHECK TX
+                </button>
+              </div>
+            </div>
+
+            <!-- Default view: history table -->
+            <div id="historyView" class="table-scroll">
+              <table id="historyTable">
+                <thead>
+                  <tr>
+                    <th>Date</th>
+                    <th>TXID</th>
+                    <th>Amt</th>
+                    <th>Fee</th>
+                    <th>Address</th>
+                    <th>Conf</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td colspan="6">Loading...</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <!-- Inline TX checker -->
+            <div id="txCheckerView" class="tx-embed-wrap">
+              <div class="tx-embed-header">
+                <input
+                  id="txCheckInput"
+                  class="modal-input"
+                  placeholder="Enter TXID..."
+                />
+                <button id="txCheckGoBtn" class="btn-small">CHECK</button>
+                <button id="txCheckerBackBtn" class="btn-small">BACK</button>
+              </div>
+              <div class="tx-embed-row">
+                <div class="tx-embed-panel">
+                  <div class="tx-embed-title">Summary</div>
+                  <pre id="txSummaryPre">Enter a TXID above.</pre>
+                </div>
+                <div class="tx-embed-panel">
+                  <div class="tx-embed-title">Raw JSON</div>
+                  <pre id="txRawPre">...</pre>
+                </div>
+              </div>
+            </div>
+
+            <div class="panel-hint">
+              Wallet transactions from your node (incoming and outgoing). Click
+              a row for full details or use CHECK TX to inspect any TXID.
+            </div>
+          </div>
+        </div>
+
+        <div id="statusBar" class="status-bar"></div>
+
+        <div class="footer">
+          © <span id="yearSpan"></span> Zord.cash • Znode Monitor
+        </div>
+      </div>
+    </div>
+
+    <!-- Import Private Key Modal -->
+    <div id="importModalOverlay" class="modal-overlay">
+      <div class="modal">
+        <div class="modal-header">
+          <div class="modal-title">IMPORT PRIVATE KEY</div>
+          <div id="importModalClose" class="modal-close">X</div>
+        </div>
+        <div class="modal-body">
+          <div>
+            <div class="modal-label">Private Key</div>
+            <textarea
+              id="importPrivKeyInput"
+              class="modal-textarea"
+              placeholder="Enter your WIF private key..."
+            ></textarea>
+          </div>
+          <div>
+            <div class="modal-label">Label / Name</div>
+            <input
+              id="importLabelInput"
+              class="modal-input"
+              placeholder="e.g. Cold Wallet"
+            />
+          </div>
+          <div class="modal-toggle-row">
+            <input
+              id="importRescanCheckbox"
+              type="checkbox"
+              class="modal-checkbox"
+              checked
+            />
+            <label for="importRescanCheckbox">Rescan blockchain</label>
+          </div>
+          <div class="modal-hint">
+            If this is a brand new wallet with no past history, you can safely
+            disable rescan to save time.
+          </div>
+          <div
+            id="importStatus"
+            class="modal-hint"
+            style="margin-top: 0.4rem; min-height: 0.8rem;"
+          ></div>
+        </div>
+        <div class="modal-footer">
+          <button id="importCancelBtn" class="btn-small">CANCEL</button>
+          <button id="importConfirmBtn" class="btn-small">IMPORT</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Send ZEC Modal -->
+    <div id="sendModalOverlay" class="modal-overlay">
+      <div class="modal">
+        <div class="modal-header">
+          <div class="modal-title">SEND ZEC</div>
+          <div id="sendModalClose" class="modal-close">X</div>
+        </div>
+        <div class="modal-body">
+          <div>
+            <div class="modal-label">From Wallet</div>
+            <select id="sendWalletSelect" class="modal-select">
+              <option value="">Loading...</option>
+            </select>
+          </div>
+          <div>
+            <div class="modal-label">Amount (ZEC)</div>
+            <input
+              id="sendAmountInput"
+              class="modal-input"
+              placeholder="0.0"
+              inputmode="decimal"
+            />
+            <div id="sendAmountHint" class="modal-hint">
+              Max: ...
+            </div>
+          </div>
+          <div>
+            <div class="modal-label">Destination Address</div>
+            <input
+              id="sendAddressInput"
+              class="modal-input"
+              placeholder="t1..."
+            />
+          </div>
+          <div class="modal-hint">
+            Max spend = balance minus 0.0001 ZEC reserved for fees.
+          </div>
+
+          <div
+            id="sendUtxoHint"
+            class="modal-hint"
+            style="margin-top: 0.4rem;"
+          >
+            Selected UTXOs: 0 (total 0.00000000 ZEC)
+          </div>
+
+          <!-- TXID + STATUS AREA -->
+          <div
+            id="sendTxSection"
+            style="
+              display: none;
+              margin-top: 0.6rem;
+              border-top: 1px solid rgba(255, 255, 255, 0.2);
+              padding-top: 0.5rem;
+            "
+          >
+            <div class="modal-label">Last TXID</div>
+            <div
+              id="sendTxidDisplay"
+              class="modal-hint break-all"
+              style="margin-bottom: 0.4rem;"
+            ></div>
+            <button
+              id="sendCheckStatusBtn"
+              class="btn-small"
+              type="button"
+              style="margin-bottom: 0.3rem;"
+            >
+              CHECK STATUS
+            </button>
+            <div
+              id="sendConfirmationsDisplay"
+              class="modal-hint"
+              style="min-height: 0.7rem;"
+            ></div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button id="sendCancelBtn" class="btn-small">CANCEL</button>
+          <button id="sendConfirmBtn" class="btn-small">SEND</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Wallet TX Detail Modal -->
+    <div id="txDetailOverlay" class="modal-overlay">
+      <div class="modal">
+        <div class="modal-header">
+          <div class="modal-title">TRANSACTION DETAILS</div>
+          <div id="txDetailClose" class="modal-close">X</div>
+        </div>
+        <div class="modal-body">
+          <div>
+            <div class="modal-label">TXID</div>
+            <div
+              id="txDetailTxid"
+              class="modal-hint break-all"
+              style="margin-bottom: 0.25rem;"
+            ></div>
+            <button id="txDetailCopyTxidBtn" class="btn-small" type="button">
+              COPY TXID
+            </button>
+          </div>
+
+          <div>
+            <div class="modal-label">Address</div>
+            <div
+              id="txDetailAddress"
+              class="modal-hint break-all"
+              style="margin-bottom: 0.25rem;"
+            ></div>
+            <button id="txDetailCopyAddrBtn" class="btn-small" type="button">
+              COPY ADDRESS
+            </button>
+          </div>
+
+          <div>
+            <div class="modal-label">Amount / Fee</div>
+            <div id="txDetailAmount" class="modal-hint"></div>
+          </div>
+
+          <div>
+            <div class="modal-label">Category / Time</div>
+            <div id="txDetailMeta" class="modal-hint"></div>
+          </div>
+
+          <div
+            style="
+              margin-top: 0.4rem;
+              border-top: 1px solid rgba(255, 255, 255, 0.2);
+              padding-top: 0.4rem;
+            "
+          >
+            <button id="txDetailCheckBtn" class="btn-small" type="button">
+              CHECK STATUS
+            </button>
+            <div
+              id="txDetailConf"
+              class="modal-hint"
+              style="margin-top: 0.3rem;"
+            ></div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button id="txDetailCloseBtn" class="btn-small">CLOSE</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- UTXO Detail Modal -->
+    <div id="utxoDetailOverlay" class="modal-overlay">
+      <div class="modal">
+        <div class="modal-header">
+          <div class="modal-title">UTXO DETAILS</div>
+          <div id="utxoDetailClose" class="modal-close">X</div>
+        </div>
+        <div class="modal-body">
+          <div>
+            <div class="modal-label">TXID / VOUT</div>
+            <div
+              id="utxoDetailTxid"
+              class="modal-hint break-all"
+              style="margin-bottom: 0.25rem;"
+            ></div>
+          </div>
+
+          <div>
+            <div class="modal-label">Address / Label</div>
+            <div id="utxoDetailAddress" class="modal-hint break-all"></div>
+          </div>
+
+          <div>
+            <div class="modal-label">Amount / Confirmations</div>
+            <div id="utxoDetailAmount" class="modal-hint"></div>
+          </div>
+
+          <div>
+            <div class="modal-label">Received Time</div>
+            <div id="utxoDetailTime" class="modal-hint"></div>
+          </div>
+
+          <div style="margin-top: 0.25rem;">
+            <div class="modal-label">TX Summary</div>
+            <div id="utxoDetailSummary" class="modal-hint"></div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button id="utxoDetailCloseBtn" class="btn-small">CLOSE</button>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      function $(id) {
+        return document.getElementById(id);
+      }
+
+      function setStatus(msg, isError) {
+        const statusBar = $('statusBar');
+        if (!statusBar) return;
+        statusBar.textContent = msg || '';
+        if (isError) statusBar.classList.add('error');
+        else statusBar.classList.remove('error');
+      }
+
+      function setupMenu() {
+        const menuButton = $('menuButton');
+        const overlay = $('sidebarOverlay');
+        const closeBtn = $('sidebarClose');
+
+        if (!menuButton || !overlay || !closeBtn) return;
+
+        const close = () => overlay.classList.remove('active');
+
+        menuButton.addEventListener('click', () => {
+          overlay.classList.add('active');
+        });
+
+        closeBtn.addEventListener('click', close);
+        overlay.addEventListener('click', (e) => {
+          if (e.target === overlay) close();
+        });
+      }
+
+      let lastWallets = [];
+      let walletHistory = [];
+      let allUtxos = [];
+      const selectedUtxoKeys = new Set(); // "txid:vout"
+      const FEE_RESERVE = 0.0001; // 10000 sats
+      let lastSendTxid = null;
+      let currentDetailTx = null;
+      let currentUtxoDetail = null;
+
+      function utxoKey(u) {
+        return `${u.txid}:${u.vout}`;
+      }
+
+      function truncateMiddle(str, front, back) {
+        if (!str) return '';
+        if (str.length <= front + back + 3) return str;
+        return str.slice(0, front) + '...' + str.slice(-back);
+      }
+
+      async function loadNodeStatus() {
+        const statusDot = $('statusDot');
+        const statusText = $('statusText');
+        const overviewPre = $('overviewPre');
+        const connectionsPre = $('connectionsPre');
+        const mempoolPre = $('mempoolPre');
+        const walletTableBody = $('walletTable').querySelector('tbody');
+
+        try {
+          setStatus('Querying node...', false);
+          statusText.textContent = 'Querying node...';
+
+          const res = await fetch('/api/node/status', { cache: 'no-store' });
+          if (!res.ok) throw new Error('HTTP ' + res.status);
+
+          const data = await res.json();
+
+          const connected = !!data.connected;
+          if (connected) {
+            statusDot.classList.add('online');
+            statusText.textContent = 'Node: ONLINE';
+          } else {
+            statusDot.classList.remove('online');
+            statusText.textContent = 'Node: OFFLINE';
+          }
+
+          const bi = data.blockchainInfo || {};
+          const ni = data.networkInfo || {};
+          const mi = data.mempoolInfo || {};
+
+          const overviewLines = [];
+          if (bi.chain !== undefined) overviewLines.push('Chain: ' + bi.chain);
+          if (bi.blocks !== undefined)
+            overviewLines.push('Blocks: ' + bi.blocks);
+          if (bi.headers !== undefined)
+            overviewLines.push('Headers: ' + bi.headers);
+          if (bi.bestblockhash !== undefined)
+            overviewLines.push('Best Block: ' + bi.bestblockhash);
+          if (bi.difficulty !== undefined)
+            overviewLines.push('Difficulty: ' + bi.difficulty);
+          if (ni.version !== undefined)
+            overviewLines.push(
+              'Version: ' + (ni.subversion || '') + ' (' + ni.version + ')'
+            );
+
+          overviewPre.textContent =
+            overviewLines.length > 0
+              ? overviewLines.join('\n')
+              : 'No overview data.';
+
+          const connLines = [];
+          if (ni.connections !== undefined)
+            connLines.push('Peer connections: ' + ni.connections);
+          if (ni.localaddresses && ni.localaddresses.length) {
+            connLines.push('\nLocal addresses:');
+            ni.localaddresses.forEach((a) => {
+              connLines.push(
+                '  ' +
+                  (a.address || '-') +
+                  ':' +
+                  (a.port || '-') +
+                  ' (' +
+                  (a.score || 0) +
+                  ')'
+              );
+            });
+          }
+          connectionsPre.textContent =
+            connLines.length > 0 ? connLines.join('\n') : 'No connection data.';
+
+          const memLines = [];
+          if (mi.size !== undefined) memLines.push('TXs in mempool: ' + mi.size);
+          if (mi.bytes !== undefined)
+            memLines.push('Bytes in mempool: ' + mi.bytes);
+
+          const pending = Array.isArray(data.pendingTxs) ? data.pendingTxs : [];
+          if (pending.length) {
+            memLines.push('');
+            memLines.push('Transactions:');
+            pending.forEach((tx, i) => {
+              const line =
+                (i + 1) +
+                '. ' +
+                truncateMiddle(tx.txid || '-', 10, 10) +
+                ' | fee: ' +
+                (tx.fee !== undefined ? tx.fee : '?') +
+                ' | size: ' +
+                (tx.size !== undefined ? tx.size : '?');
+              memLines.push(line);
+            });
+          }
+
+          mempoolPre.textContent =
+            memLines.length > 0 ? memLines.join('\n') : 'No mempool data.';
+
+          walletTableBody.innerHTML = '';
+          lastWallets = Array.isArray(data.wallets) ? data.wallets : [];
+
+          if (!lastWallets.length) {
+            const tr = document.createElement('tr');
+            const td = document.createElement('td');
+            td.colSpan = 3;
+            td.textContent = 'No wallet data.';
+            tr.appendChild(td);
+            walletTableBody.appendChild(tr);
+          } else {
+            lastWallets.forEach((w, idx) => {
+              const tr = document.createElement('tr');
+              const nameTd = document.createElement('td');
+              const balTd = document.createElement('td');
+              const unconfTd = document.createElement('td');
+
+              nameTd.textContent = w.name || 'wallet-' + (idx + 1);
+              balTd.textContent =
+                w.balance !== undefined ? w.balance.toString() : '0';
+              unconfTd.textContent =
+                w.unconfirmed !== undefined ? w.unconfirmed.toString() : '0';
+
+              tr.appendChild(nameTd);
+              tr.appendChild(balTd);
+              tr.appendChild(unconfTd);
+              walletTableBody.appendChild(tr);
+            });
+          }
+
+          setStatus('', false);
+        } catch (err) {
+          console.error(err);
+          statusDot.classList.remove('online');
+          statusText.textContent = 'Node: ERROR';
+          overviewPre.textContent = 'Error: ' + err.message;
+          connectionsPre.textContent = 'Error.';
+          mempoolPre.textContent = 'Error.';
+          const walletTableBody = $('walletTable').querySelector('tbody');
+          walletTableBody.innerHTML = '';
+          const tr = document.createElement('tr');
+          const td = document.createElement('td');
+          td.colSpan = 3;
+          td.textContent = 'Error loading wallet data.';
+          tr.appendChild(td);
+          walletTableBody.appendChild(tr);
+          setStatus('Node error: ' + err.message, true);
+        }
+      }
+
+      // wallet history panel
+      async function loadWalletHistory() {
+        const tbody = $('historyTable').querySelector('tbody');
+        try {
+          tbody.innerHTML =
+            '<tr><td colspan="6">Loading wallet transactions...</td></tr>';
+          const res = await fetch('/api/node/history', { cache: 'no-store' });
+          if (!res.ok) throw new Error('HTTP ' + res.status);
+
+          const data = await res.json();
+          walletHistory = Array.isArray(data.txs) ? data.txs : data;
+
+          // newest first
+          walletHistory.sort((a, b) => (b.time || 0) - (a.time || 0));
+
+          tbody.innerHTML = '';
+          if (!walletHistory.length) {
+            const tr = document.createElement('tr');
+            const td = document.createElement('td');
+            td.colSpan = 6;
+            td.textContent = 'No wallet transactions.';
+            tr.appendChild(td);
+            tbody.appendChild(tr);
+            return;
+          }
+
+          walletHistory.forEach((tx) => {
+            const tr = document.createElement('tr');
+
+            const dateTd = document.createElement('td');
+            const txidTd = document.createElement('td');
+            const amtTd = document.createElement('td');
+            const feeTd = document.createElement('td');
+            const addrTd = document.createElement('td');
+            const confTd = document.createElement('td');
+
+            if (tx.time) {
+              const d = new Date(tx.time * 1000);
+              dateTd.textContent = d.toLocaleDateString();
+            } else {
+              dateTd.textContent = '-';
+            }
+
+            txidTd.textContent = truncateMiddle(tx.txid || '-', 10, 10);
+            amtTd.textContent =
+              tx.amount !== undefined ? tx.amount.toString() : '-';
+            feeTd.textContent =
+              tx.fee !== undefined ? tx.fee.toString() : '-';
+
+            const addr = tx.address || '';
+            addrTd.textContent = addr ? truncateMiddle(addr, 5, 5) : '-';
+
+            confTd.textContent =
+              tx.confirmations !== undefined
+                ? tx.confirmations.toString()
+                : '-';
+
+            tr.appendChild(dateTd);
+            tr.appendChild(txidTd);
+            tr.appendChild(amtTd);
+            tr.appendChild(feeTd);
+            tr.appendChild(addrTd);
+            tr.appendChild(confTd);
+
+            tr.addEventListener('click', () => openTxDetail(tx));
+
+            tbody.appendChild(tr);
+          });
+        } catch (err) {
+          console.error(err);
+          tbody.innerHTML =
+            '<tr><td colspan="6">Error loading transaction history.</td></tr>';
+          setStatus('History error: ' + err.message, true);
+        }
+      }
+
+      // UTXO list
+      async function loadUtxos() {
+        const body = $('utxoListBody');
+        try {
+          body.innerHTML =
+            '<tr><td colspan="4">Loading UTXOs...</td></tr>';
+          const res = await fetch('/api/wallet/utxos', { cache: 'no-store' });
+          if (!res.ok) throw new Error('HTTP ' + res.status);
+          const data = await res.json();
+          allUtxos = Array.isArray(data.utxos) ? data.utxos : [];
+
+          // labels for filter
+          const labels = Array.from(
+            new Set(
+              allUtxos.map((u) => (u.label ? String(u.label) : 'default'))
+            )
+          );
+          const filterSel = $('utxoWalletFilter');
+          const current = filterSel.value || 'all';
+          filterSel.innerHTML = '<option value="all">All wallets</option>';
+          labels.forEach((lab) => {
+            const opt = document.createElement('option');
+            opt.value = lab;
+            opt.textContent = lab;
+            filterSel.appendChild(opt);
+          });
+          if (labels.includes(current)) filterSel.value = current;
+
+          renderUtxoList();
+        } catch (err) {
+          console.error(err);
+          body.innerHTML =
+            '<tr><td colspan="4">Error loading UTXOs.</td></tr>';
+          setStatus('UTXO error: ' + err.message, true);
+        }
+      }
+
+      function renderUtxoList() {
+        const body = $('utxoListBody');
+        const filter = $('utxoWalletFilter').value || 'all';
+        body.innerHTML = '';
+
+        let rows = allUtxos;
+        if (filter !== 'all') {
+          rows = rows.filter(
+            (u) => (u.label || 'default') === filter
+          );
+        }
+
+        if (!rows.length) {
+          const tr = document.createElement('tr');
+          const td = document.createElement('td');
+          td.colSpan = 4;
+          td.textContent = 'No UTXOs for this filter.';
+          tr.appendChild(td);
+          body.appendChild(tr);
+          updateSelectedUtxosHint();
+          return;
+        }
+
+        rows.forEach((u) => {
+          const tr = document.createElement('tr');
+
+          const selTd = document.createElement('td');
+          const addrTd = document.createElement('td');
+          const txidTd = document.createElement('td');
+          const amtTd = document.createElement('td');
+
+          const cb = document.createElement('input');
+          cb.type = 'checkbox';
+          cb.style.cursor = 'pointer';
+          const key = utxoKey(u);
+          if (selectedUtxoKeys.has(key)) cb.checked = true;
+          cb.addEventListener('change', () => {
+            if (cb.checked) selectedUtxoKeys.add(key);
+            else selectedUtxoKeys.delete(key);
+            updateSelectedUtxosHint();
+          });
+          selTd.appendChild(cb);
+
+          addrTd.textContent = truncateMiddle(u.address || '-', 5, 5);
+          txidTd.textContent = truncateMiddle(u.txid || '-', 10, 10);
+          amtTd.textContent =
+            u.amount !== undefined ? u.amount.toString() : '-';
+
+          tr.appendChild(selTd);
+          tr.appendChild(addrTd);
+          tr.appendChild(txidTd);
+          tr.appendChild(amtTd);
+
+          // clicking row (but not the checkbox) opens UTXO detail modal
+          tr.addEventListener('click', (e) => {
+            if (e.target === cb) return; // checkbox already handled
+            openUtxoDetail(u);
+          });
+
+          body.appendChild(tr);
+        });
+
+        updateSelectedUtxosHint();
+      }
+
+      function updateSelectedUtxosHint() {
+        const hint = $('sendUtxoHint');
+        if (!hint) return;
+        let count = 0;
+        let total = 0;
+        allUtxos.forEach((u) => {
+          const key = utxoKey(u);
+          if (selectedUtxoKeys.has(key)) {
+            count++;
+            total += Number(u.amount || 0);
+          }
+        });
+        hint.textContent =
+          'Selected UTXOs: ' +
+          count +
+          ' (total ' +
+          total.toFixed(8) +
+          ' ZEC)';
+      }
+
+      // ----- Import Key Modal -----
+      function openImportModal() {
+        $('importStatus').textContent = '';
+        $('importStatus').style.color = '';
+        $('importModalOverlay').classList.add('active');
+      }
+      function closeImportModal() {
+        $('importModalOverlay').classList.remove('active');
+      }
+
+      async function doImportPrivKey() {
+        const priv = $('importPrivKeyInput').value.trim();
+        const label = $('importLabelInput').value.trim();
+        const rescan = $('importRescanCheckbox').checked;
+        const statusEl = $('importStatus');
+        statusEl.textContent = '';
+        statusEl.style.color = '';
+
+        if (!priv) {
+          setStatus('Private key is required.', true);
+          statusEl.textContent = 'Private key is required.';
+          statusEl.style.color = '#ff6b6b';
+          return;
+        }
+
+        try {
+          setStatus('Importing private key...', false);
+          statusEl.textContent = 'Importing key...';
+          const res = await fetch('/api/wallet/import-privkey', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ privkey: priv, label, rescan }),
+          });
+          const data = await res.json().catch(() => ({}));
+          if (!res.ok) {
+            throw new Error(data.error || data.detail || 'Import failed');
+          }
+
+          // keep modal open, reload node state and UTXOs
+          await loadNodeStatus();
+          await loadWalletHistory();
+          await loadUtxos();
+
+          statusEl.textContent = 'Zwallet Zimprted Zuccessfully';
+          statusEl.style.color = '#37ff7f';
+          setStatus('Private key imported successfully.', false);
+        } catch (err) {
+          console.error(err);
+          statusEl.textContent = 'Error: ' + err.message;
+          statusEl.style.color = '#ff6b6b';
+          setStatus('Import error: ' + err.message, true);
+        }
+      }
+
+      // ----- Send ZEC Modal -----
+      function getSelectedWalletBalance() {
+        if (!lastWallets.length) return 0;
+        const selName = $('sendWalletSelect').value;
+        const w =
+          lastWallets.find((x) => (x.name || '') === selName) || lastWallets[0];
+        return Number(w.balance || 0);
+      }
+
+      function updateSendAmountHint() {
+        const bal = getSelectedWalletBalance();
+        const max = Math.max(0, bal - FEE_RESERVE);
+        $('sendAmountHint').textContent =
+          'Max: ' + max.toFixed(8) + ' ZEC (balance minus 0.0001 fee)';
+      }
+
+      function openSendModal() {
+        const sel = $('sendWalletSelect');
+        sel.innerHTML = '';
+        if (!lastWallets.length) {
+          const opt = document.createElement('option');
+          opt.value = '';
+          opt.textContent = 'No wallet data';
+          sel.appendChild(opt);
+        } else {
+          lastWallets.forEach((w, idx) => {
+            const opt = document.createElement('option');
+            opt.value = w.name || 'wallet-' + (idx + 1);
+            opt.textContent =
+              (w.name || 'wallet-' + (idx + 1)) +
+              ' (' +
+              (w.balance !== undefined ? w.balance : 0) +
+              ' ZEC)';
+            sel.appendChild(opt);
+          });
+        }
+
+        updateSendAmountHint();
+        updateSelectedUtxosHint();
+
+        $('sendAmountInput').value = '';
+        $('sendAddressInput').value = '';
+
+        lastSendTxid = null;
+        $('sendTxSection').style.display = 'none';
+        $('sendTxidDisplay').textContent = '';
+        const confEl = $('sendConfirmationsDisplay');
+        confEl.textContent = '';
+        confEl.classList.remove('confirmations-ok');
+
+        $('sendModalOverlay').classList.add('active');
+      }
+
+      function closeSendModal() {
+        $('sendModalOverlay').classList.remove('active');
+      }
+
+      async function doSendZec() {
+        const walletName = $('sendWalletSelect').value;
+        const amountStr = $('sendAmountInput').value.trim();
+        const addr = $('sendAddressInput').value.trim();
+        const bal = getSelectedWalletBalance();
+        const max = Math.max(0, bal - FEE_RESERVE);
+
+        const amount = Number(amountStr);
+
+        if (!addr) {
+          setStatus('Destination address required.', true);
+          return;
+        }
+        if (!amountStr || !isFinite(amount) || amount <= 0) {
+          setStatus('Amount must be > 0.', true);
+          return;
+        }
+        if (amount > max + 1e-8) {
+          setStatus('Amount exceeds max spend (balance minus fee).', true);
+          return;
+        }
+
+        const utxosForSend = allUtxos.filter((u) =>
+          selectedUtxoKeys.has(utxoKey(u))
+        );
+        const utxoPayload = utxosForSend.map((u) => ({
+          txid: u.txid,
+          vout: u.vout,
+        }));
+
+        try {
+          setStatus('Sending ZEC...', false);
+          const res = await fetch('/api/wallet/send', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              walletName,
+              address: addr,
+              amount,
+              utxos: utxoPayload,
+            }),
+          });
+          const data = await res.json().catch(() => ({}));
+          if (!res.ok) {
+            throw new Error(data.error || data.detail || 'Send failed');
+          }
+
+          lastSendTxid = data.txid;
+          const nowStr = new Date().toLocaleString();
+          $('sendTxidDisplay').textContent =
+            (data.txid || '?') + ' (sent at ' + nowStr + ')';
+          const confEl = $('sendConfirmationsDisplay');
+          confEl.textContent =
+            'Click CHECK STATUS to query confirmations.';
+          confEl.classList.remove('confirmations-ok');
+          $('sendTxSection').style.display = 'block';
+
+          setStatus('ZEC sent. TXID is shown in the modal.', false);
+          await loadNodeStatus();
+          await loadWalletHistory();
+          await loadUtxos();
+        } catch (err) {
+          console.error(err);
+          setStatus('Send error: ' + err.message, true);
+        }
+      }
+
+      async function checkSendStatus() {
+        if (!lastSendTxid) {
+          setStatus('No TXID to check yet.', true);
+          return;
+        }
+
+        try {
+          setStatus('Checking send status...', false);
+          const confEl = $('sendConfirmationsDisplay');
+          confEl.textContent = 'Loading...';
+          confEl.classList.remove('confirmations-ok');
+
+          const res = await fetch('/api/tx/check', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ txid: lastSendTxid }),
+          });
+          const data = await res.json().catch(() => ({}));
+          if (!res.ok) {
+            throw new Error(data.error || data.detail || 'Check failed');
+          }
+
+          const tx = data.tx || data;
+          const conf =
+            tx.confirmations !== undefined ? tx.confirmations : 'unknown';
+          let timeStr = 'unknown';
+          if (tx.blocktime || tx.time) {
+            const ts = (tx.blocktime || tx.time) * 1000;
+            if (Number.isFinite(ts)) {
+              timeStr = new Date(ts).toLocaleString();
+            }
+          }
+
+          confEl.textContent =
+            'Confirmations: ' + conf + ' | Time: ' + timeStr;
+
+          const confNum = Number(conf);
+          if (Number.isFinite(confNum) && confNum > 0) {
+            confEl.classList.add('confirmations-ok');
+          } else {
+            confEl.classList.remove('confirmations-ok');
+          }
+
+          setStatus('Send status updated.', false);
+        } catch (err) {
+          console.error(err);
+          const confEl = $('sendConfirmationsDisplay');
+          confEl.textContent = 'Error: ' + err.message;
+          confEl.classList.remove('confirmations-ok');
+          setStatus('TX status error: ' + err.message, true);
+        }
+      }
+
+      // ----- Wallet TX detail modal -----
+      function openTxDetail(tx) {
+        currentDetailTx = tx || null;
+        const idEl = $('txDetailTxid');
+        const addrEl = $('txDetailAddress');
+        const amtEl = $('txDetailAmount');
+        const metaEl = $('txDetailMeta');
+        const confEl = $('txDetailConf');
+
+        idEl.textContent = tx.txid || '-';
+        addrEl.textContent = tx.address || '-';
+
+        amtEl.textContent =
+          'Amount: ' +
+          (tx.amount !== undefined ? tx.amount : '?') +
+          ' ZEC | Fee: ' +
+          (tx.fee !== undefined ? tx.fee : '?') +
+          ' ZEC';
+
+        let timeStr = 'unknown';
+        if (tx.time) {
+          const d = new Date(tx.time * 1000);
+          timeStr = d.toLocaleString();
+        }
+
+        metaEl.textContent =
+          'Category: ' +
+          (tx.category || '-') +
+          ' | Time: ' +
+          timeStr;
+
+        confEl.textContent =
+          'Confirmations: ' +
+          (tx.confirmations !== undefined ? tx.confirmations : 'unknown');
+        confEl.classList.remove('confirmations-ok');
+        const confNum = Number(tx.confirmations);
+        if (Number.isFinite(confNum) && confNum > 0) {
+          confEl.classList.add('confirmations-ok');
+        }
+
+        $('txDetailOverlay').classList.add('active');
+      }
+
+      function closeTxDetail() {
+        $('txDetailOverlay').classList.remove('active');
+        currentDetailTx = null;
+      }
+
+      async function checkTxDetailStatus() {
+        if (!currentDetailTx || !currentDetailTx.txid) {
+          setStatus('No transaction selected.', true);
+          return;
+        }
+        try {
+          setStatus('Checking transaction status...', false);
+          const confEl = $('txDetailConf');
+          confEl.textContent = 'Loading...';
+          confEl.classList.remove('confirmations-ok');
+
+          const res = await fetch('/api/tx/check', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ txid: currentDetailTx.txid }),
+          });
+          const data = await res.json().catch(() => ({}));
+          if (!res.ok) {
+            throw new Error(data.error || data.detail || 'Check failed');
+          }
+
+          const tx = data.tx || data;
+          const conf =
+            tx.confirmations !== undefined ? tx.confirmations : 'unknown';
+          confEl.textContent = 'Confirmations: ' + conf;
+
+          const confNum = Number(conf);
+          if (Number.isFinite(confNum) && confNum > 0) {
+            confEl.classList.add('confirmations-ok');
+          } else {
+            confEl.classList.remove('confirmations-ok');
+          }
+
+          setStatus('Transaction status updated.', false);
+        } catch (err) {
+          console.error(err);
+          const confEl = $('txDetailConf');
+          confEl.textContent = 'Error: ' + err.message;
+          confEl.classList.remove('confirmations-ok');
+          setStatus('TX status error: ' + err.message, true);
+        }
+      }
+
+      async function copyToClipboard(text) {
+        try {
+          await navigator.clipboard.writeText(text || '');
+          setStatus('Copied to clipboard.', false);
+        } catch (e) {
+          setStatus('Copy failed.', true);
+        }
+      }
+
+      // ----- UTXO detail modal -----
+      function openUtxoDetail(u) {
+        currentUtxoDetail = u;
+        $('utxoDetailTxid').textContent =
+          (u.txid || '-') + ' / vout ' + (u.vout ?? '?');
+        $('utxoDetailAddress').textContent =
+          (u.address || '-') + '  |  label: ' + (u.label || 'default');
+        $('utxoDetailAmount').textContent =
+          'Amount: ' +
+          (u.amount !== undefined ? u.amount : '?') +
+          ' ZEC  |  Confirmations: ' +
+          (u.confirmations !== undefined ? u.confirmations : 'unknown');
+        $('utxoDetailTime').textContent = 'Loading time from node...';
+        $('utxoDetailSummary').textContent = '';
+
+        $('utxoDetailOverlay').classList.add('active');
+
+        // get extra info from tx/check (time etc)
+        fetch('/api/tx/check', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ txid: u.txid }),
+        })
+          .then((r) => r.json())
+          .then((data) => {
+            const tx = data.tx || data || {};
+            let timeStr = 'unknown';
+            if (tx.blocktime || tx.time) {
+              const ts = (tx.blocktime || tx.time) * 1000;
+              if (Number.isFinite(ts)) {
+                timeStr = new Date(ts).toLocaleString();
+              }
+            }
+            $('utxoDetailTime').textContent = timeStr;
+
+            const lines = [];
+            if (Array.isArray(tx.details)) {
+              tx.details.forEach((d, i) => {
+                lines.push(
+                  `${i + 1}. ${d.category || ''} ${d.amount || ''} ZEC -> ${
+                    d.address || ''
+                  }`
+                );
+              });
+            }
+            $('utxoDetailSummary').textContent = lines.join(' | ');
+          })
+          .catch((err) => {
+            console.error('utxo detail tx check error', err);
+            $('utxoDetailTime').textContent = 'Error loading time.';
+          });
+      }
+
+      function closeUtxoDetail() {
+        $('utxoDetailOverlay').classList.remove('active');
+        currentUtxoDetail = null;
+      }
+
+      // ----- inline TX checker -----
+      async function doCheckTx() {
+        const txid = $('txCheckInput').value.trim();
+        if (!txid) {
+          setStatus('TXID required for check.', true);
+          return;
+        }
+
+        try {
+          setStatus('Checking transaction...', false);
+          $('txSummaryPre').textContent = 'Loading...';
+          $('txRawPre').textContent = 'Loading...';
+
+          const res = await fetch('/api/tx/check', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ txid }),
+          });
+          const data = await res.json().catch(() => ({}));
+          if (!res.ok) {
+            throw new Error(data.error || data.detail || 'Check failed');
+          }
+
+          const tx = data.tx || data;
+          const lines = [];
+          if (tx.amount !== undefined)
+            lines.push('Amount: ' + tx.amount + ' ZEC');
+          if (tx.fee !== undefined) lines.push('Fee: ' + tx.fee + ' ZEC');
+          if (tx.confirmations !== undefined)
+            lines.push('Confirmations: ' + tx.confirmations);
+          if (tx.blockhash) lines.push('Blockhash: ' + tx.blockhash);
+          if (tx.blocktime)
+            lines.push(
+              'Block time: ' + new Date(tx.blocktime * 1000).toISOString()
+            );
+          if (Array.isArray(tx.details) && tx.details.length) {
+            lines.push('\nDetails:');
+            tx.details.forEach((d, i) => {
+              lines.push(
+                `  ${i + 1}. ${d.category || ''} ${d.amount || ''} ZEC -> ${
+                  d.address || ''
+                }`
+              );
+            });
+          }
+
+          $('txSummaryPre').textContent =
+            lines.length ? lines.join('\n') : 'No summary fields.';
+
+          $('txRawPre').textContent = JSON.stringify(tx, null, 2);
+
+          setStatus('TX check complete.', false);
+        } catch (err) {
+          console.error(err);
+          $('txSummaryPre').textContent = 'Error: ' + err.message;
+          $('txRawPre').textContent = 'Error.';
+          setStatus('TX check error: ' + err.message, true);
+        }
+      }
+
+      document.addEventListener('DOMContentLoaded', () => {
+        const yearSpan = $('yearSpan');
+        if (yearSpan) yearSpan.textContent = new Date().getFullYear();
+
+        setupMenu();
+        loadNodeStatus();
+        loadWalletHistory();
+        loadUtxos();
+
+        // import modal
+        $('importKeyBtn').addEventListener('click', openImportModal);
+        $('importModalClose').addEventListener('click', closeImportModal);
+        $('importCancelBtn').addEventListener('click', closeImportModal);
+        $('importConfirmBtn').addEventListener('click', doImportPrivKey);
+
+        // send modal
+        $('sendZecBtn').addEventListener('click', openSendModal);
+        $('sendModalClose').addEventListener('click', closeSendModal);
+        $('sendCancelBtn').addEventListener('click', closeSendModal);
+        $('sendWalletSelect').addEventListener('change', updateSendAmountHint);
+        $('sendConfirmBtn').addEventListener('click', doSendZec);
+        $('sendCheckStatusBtn').addEventListener('click', checkSendStatus);
+
+        // UTXO filter
+        $('utxoWalletFilter').addEventListener('change', renderUtxoList);
+        $('utxoDetailClose').addEventListener('click', closeUtxoDetail);
+        $('utxoDetailCloseBtn').addEventListener('click', closeUtxoDetail);
+        $('utxoDetailOverlay').addEventListener('click', (e) => {
+          if (e.target.id === 'utxoDetailOverlay') closeUtxoDetail();
+        });
+
+        // copy buttons in detail modal
+        $('txDetailCopyTxidBtn').addEventListener('click', () => {
+          const txt = $('txDetailTxid').textContent || '';
+          copyToClipboard(txt);
+        });
+        $('txDetailCopyAddrBtn').addEventListener('click', () => {
+          const txt = $('txDetailAddress').textContent || '';
+          copyToClipboard(txt);
+        });
+
+        // wallet tx detail modal controls
+        $('txDetailCheckBtn').addEventListener('click', checkTxDetailStatus);
+        $('txDetailClose').addEventListener('click', closeTxDetail);
+        $('txDetailCloseBtn').addEventListener('click', closeTxDetail);
+        $('txDetailOverlay').addEventListener('click', (e) => {
+          if (e.target.id === 'txDetailOverlay') closeTxDetail();
+        });
+
+        // wallet balances + history refresh
+        $('walletRefreshBtn').addEventListener('click', () => {
+          loadNodeStatus();
+          loadWalletHistory();
+          loadUtxos();
+        });
+
+        // history check status button
+        $('historyRefreshBtn').addEventListener('click', loadWalletHistory);
+
+        // inline TX checker toggle
+        $('txInlineCheckBtn').addEventListener('click', () => {
+          $('historyView').style.display = 'none';
+          $('txCheckerView').style.display = 'flex';
+        });
+        $('txCheckerBackBtn').addEventListener('click', () => {
+          $('txCheckerView').style.display = 'none';
+          $('historyView').style.display = 'block';
+        });
+        $('txCheckGoBtn').addEventListener('click', doCheckTx);
+        $('txCheckInput').addEventListener('keydown', (e) => {
+          if (e.key === 'Enter') {
+            e.preventDefault();
+            doCheckTx();
+          }
+        });
+      });
+    </script>
+  </body>
+</html>

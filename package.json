@@ -1,0 +1,37 @@
+{
+  "name": "zordinals-viewer-znode-tools",
+  "version": "1.0.0",
+  "description": "Local Zordinals inscription viewer and Zcash node control dashboard (wallet, UTXOs, mempool, CLI tools) powered by a zcashd full node.",
+  "main": "viewer.js",
+  "scripts": {
+    "start": "node viewer.js",
+    "dev": "nodemon viewer.js"
+  },
+  "keywords": [
+    "zcash",
+    "zordinals",
+    "ordinals",
+    "viewer",
+    "wallet",
+    "node",
+    "mempool",
+    "utxo",
+    "cli"
+  ],
+  "author": "Zordtoshi",
+  "license": "MIT",
+  "dependencies": {
+    "axios": "^1.13.2",
+    "bitcore-lib-zcash": "^0.13.20",
+    "blake2b": "^2.1.4",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "node-fetch": "^3.3.2"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

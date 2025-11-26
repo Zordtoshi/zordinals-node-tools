@@ -1,0 +1,1040 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0"
+    />
+    <title>Zordinals Viewer</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      html,
+      body {
+        height: 100%;
+      }
+
+      body {
+        font-family: 'Press Start 2P', cursive;
+        background-image: url('/assets/bg.jpg');
+        background-size: cover;
+        background-position: center;
+        background-attachment: fixed;
+        min-height: 100vh;
+        padding: 1.5rem;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        color: #fff;
+        overflow-x: hidden;
+        overflow-y: auto;
+      }
+
+      .app-container {
+        width: 100%;
+        max-width: 1100px;
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+      }
+
+      /* MENU */
+
+      .menu-button {
+        position: fixed;
+        top: 1rem;
+        left: 1rem;
+        width: 44px;
+        height: 44px;
+        border-radius: 999px;
+        border: 2px solid #fff;
+        background: rgba(0, 0, 0, 0.6);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        cursor: pointer;
+        box-shadow: 0 0 12px rgba(0, 0, 0, 0.7);
+        z-index: 1100;
+      }
+
+      .menu-button img {
+        width: 26px;
+        height: 26px;
+        object-fit: contain;
+      }
+
+      .sidebar-overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.7);
+        display: none;
+        justify-content: flex-end;
+        z-index: 1200;
+      }
+
+      .sidebar-overlay.active {
+        display: flex;
+      }
+
+      .sidebar {
+        width: 260px;
+        max-width: 80vw;
+        background: rgba(10, 10, 10, 0.95);
+        box-shadow: -4px 0 16px rgba(0, 0, 0, 0.8);
+        border-left: 2px solid rgba(255, 255, 255, 0.25);
+        padding: 1.5rem 1.25rem;
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+        animation: slideIn 0.25s ease-out;
+      }
+
+      @keyframes slideIn {
+        from {
+          transform: translateX(100%);
+          opacity: 0;
+        }
+        to {
+          transform: translateX(0%);
+          opacity: 1;
+        }
+      }
+
+      .sidebar-title {
+        font-size: 0.8rem;
+        letter-spacing: 0.1em;
+        margin-bottom: 0.5rem;
+        text-shadow: 2px 2px 4px #000;
+      }
+
+      .sidebar-close {
+        cursor: pointer;
+        font-size: 0.9rem;
+        margin-left: auto;
+        margin-bottom: 0.5rem;
+        opacity: 0.8;
+      }
+
+      .sidebar-menu {
+        list-style: none;
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+      }
+
+      .sidebar-menu a {
+        display: block;
+        width: 100%;
+        text-align: left;
+        padding: 0.6rem 0.8rem;
+        font-size: 0.7rem;
+        border-radius: 999px;
+        border: 2px solid rgba(255, 255, 255, 0.5);
+        background: rgba(40, 40, 40, 0.9);
+        color: #fff;
+        cursor: pointer;
+        text-shadow: 1px 1px 2px #000;
+        letter-spacing: 0.08em;
+        transition: transform 0.1s ease, box-shadow 0.1s ease,
+          background 0.1s ease;
+        text-decoration: none;
+      }
+
+      .sidebar-menu a:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 0 12px rgba(255, 255, 255, 0.4);
+        background: rgba(60, 60, 60, 0.9);
+      }
+
+      /* CARD */
+
+      .content-card {
+        width: 100%;
+        background: rgba(0, 0, 0, 0.7);
+        border-radius: 16px;
+        padding: 1.5rem;
+        box-shadow: 0 0 20px rgba(0, 0, 0, 0.85);
+        border: 2px solid rgba(255, 255, 255, 0.15);
+      }
+
+      /* HERO / SEARCH */
+
+      .hero {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 1rem;
+      }
+
+      .hero-logo-wrap {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0.4rem;
+      }
+
+      .round-logo {
+        width: 110px;
+        height: 110px;
+        border-radius: 50%;
+        background-color: rgba(255, 215, 0, 0.2);
+        border: 4px solid #fff;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        overflow: hidden;
+      }
+
+      .round-logo img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        border-radius: 50%;
+      }
+
+      .site-title-small {
+        font-size: 0.8rem;
+        text-shadow: 2px 2px 4px #111;
+        letter-spacing: 0.08em;
+      }
+
+      .main-title {
+        font-size: 1.4rem;
+        text-align: center;
+        color: #fff;
+        text-shadow: 4px 4px 8px #111;
+        letter-spacing: 0.12em;
+        margin-bottom: 0.25rem;
+      }
+
+      .subtitle {
+        font-size: 0.7rem;
+        text-align: center;
+        text-shadow: 2px 2px 4px #111;
+        opacity: 0.9;
+      }
+
+      .search-bar {
+        margin-top: 1.25rem;
+        display: flex;
+        flex-wrap: nowrap;
+        gap: 0.5rem;
+        justify-content: center;
+        align-items: center;
+      }
+
+      .search-input {
+        flex: 1;
+        min-width: 0;
+        max-width: 420px;
+        padding: 0.55rem 0.75rem;
+        border-radius: 999px;
+        border: 2px solid rgba(255, 255, 255, 0.85);
+        background: rgba(0, 0, 0, 0.85);
+        color: #fff;
+        font-family: 'Press Start 2P', monospace;
+        font-size: 0.65rem;
+        outline: none;
+      }
+
+      .search-button {
+        padding: 0.55rem 0.9rem;
+        border-radius: 999px;
+        border: 2px solid rgba(255, 255, 255, 0.85);
+        background: rgba(0, 0, 0, 0.9);
+        color: #fff;
+        font-family: 'Press Start 2P', monosouse;
+        font-size: 0.65rem;
+        cursor: pointer;
+        letter-spacing: 0.08em;
+        text-shadow: 1px 1px 2px #000;
+        transition: transform 0.1s ease, box-shadow 0.1s ease,
+          background 0.1s ease;
+      }
+
+      .search-button:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 0 12px rgba(255, 255, 255, 0.6);
+        background: rgba(20, 20, 20, 0.95);
+      }
+
+      .helper-text {
+        margin-top: 0.5rem;
+        font-size: 0.6rem;
+        text-align: center;
+        opacity: 0.85;
+      }
+
+      /* LAYOUT WHEN SHOWING CONTENT */
+
+      .viewer-layout {
+        margin-top: 1.5rem;
+        display: none;
+        gap: 0.5rem;
+        align-items: stretch;
+      }
+
+      .viewer-layout.active {
+        display: flex;
+      }
+
+      .viewer-main {
+        flex: 2;
+        min-width: 0;
+        background: rgba(0, 0, 0, 0.85);
+        border-radius: 12px;
+        border: 2px solid rgba(255, 255, 255, 0.2);
+        padding: 1rem;
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+      }
+
+      .viewer-toolbar {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        justify-content: flex-start;
+        align-items: center;
+        font-size: 0.6rem;
+      }
+
+      .viewer-pill {
+        padding: 0.4rem 0.7rem;
+        border-radius: 999px;
+        border: 2px solid rgba(255, 255, 255, 0.7);
+        background: rgba(0, 0, 0, 0.9);
+        color: #fff;
+        font-size: 0.6rem;
+        text-decoration: none;
+        cursor: pointer;
+        letter-spacing: 0.08em;
+        transition: box-shadow 0.1s ease, transform 0.1s ease,
+          background 0.1s ease;
+      }
+
+      .viewer-pill:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+        background: rgba(20, 20, 20, 0.95);
+      }
+
+      .viewer-meta {
+        font-size: 0.6rem;
+        opacity: 0.85;
+      }
+
+      .viewer-content {
+        flex: 1;
+        border-radius: 8px;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        background: rgba(0, 0, 0, 0.95);
+        padding: 0.75rem;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        overflow: auto;
+      }
+
+      .viewer-content img {
+        max-width: 100%;
+        max-height: 70vh;
+        border-radius: 8px;
+      }
+
+      .viewer-content iframe {
+        width: 100%;
+        height: 70vh;
+        border: none;
+        border-radius: 8px;
+        background: #000;
+      }
+
+      /* SPLIT VIEW & TERMINAL PANEL */
+
+      .splitter {
+        width: 6px;
+        cursor: col-resize;
+        background: rgba(0, 255, 128, 0.4);
+        border-radius: 999px;
+        display: none;
+      }
+
+      .viewer-side {
+        flex: 1.1;
+        min-width: 0;
+        max-width: 400px;
+        background: rgba(5, 5, 5, 0.95);
+        border-radius: 12px;
+        border: 2px solid rgba(0, 255, 128, 0.4);
+        box-shadow: 0 0 15px rgba(0, 255, 128, 0.4);
+        padding: 0.75rem;
+        display: none;
+        flex-direction: column;
+        gap: 0.5rem;
+      }
+
+      .viewer-layout.split-active .splitter {
+        display: block;
+      }
+
+      .viewer-layout.split-active .viewer-side {
+        display: flex;
+      }
+
+      .viewer-side-header {
+        font-size: 0.65rem;
+        color: #37ff7f;
+        text-shadow: 0 0 6px rgba(55, 255, 127, 0.7);
+      }
+
+      .viewer-side-sub {
+        font-size: 0.55rem;
+        opacity: 0.85;
+        color: #b5ffcf;
+      }
+
+      .viewer-side-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 0.5rem;
+      }
+
+      .side-button {
+        padding: 0.35rem 0.6rem;
+        border-radius: 999px;
+        border: 2px solid rgba(0, 255, 128, 0.7);
+        background: rgba(0, 0, 0, 0.85);
+        color: #b5ffcf;
+        font-size: 0.55rem;
+        cursor: pointer;
+        letter-spacing: 0.05em;
+        text-shadow: 1px 1px 2px #000;
+        transition: box-shadow 0.1s ease, transform 0.1s ease,
+          background 0.1s ease;
+      }
+
+      .side-button:hover {
+        box-shadow: 0 0 12px rgba(0, 255, 128, 0.7);
+        background: rgba(10, 10, 10, 0.95);
+        transform: translateY(-1px);
+      }
+
+      .viewer-side-body {
+        flex: 1;
+        margin-top: 0.25rem;
+        padding: 0.5rem;
+        border-radius: 8px;
+        background: #000;
+        overflow: auto;
+        font-family: 'Press Start 2P', monospace;
+        font-size: 0.52rem;
+        color: #b5ffcf;
+        white-space: pre-wrap;
+        word-break: break-word;
+      }
+
+      .status-bar {
+        margin-top: 0.75rem;
+        font-size: 0.58rem;
+        text-align: center;
+        opacity: 0.9;
+      }
+
+      .status-bar.error {
+        color: #ff6b6b;
+      }
+
+      .footer {
+        margin-top: 1rem;
+        font-size: 0.6rem;
+        text-align: center;
+        text-shadow: 1px 1px 2px #111;
+        opacity: 0.85;
+      }
+
+      /* FULLSCREEN OVERLAY */
+
+      .fullscreen-overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.98);
+        display: none;
+        align-items: center;
+        justify-content: center;
+        z-index: 1500;
+      }
+
+      .fullscreen-overlay.active {
+        display: flex;
+      }
+
+      .fullscreen-close {
+        position: absolute;
+        top: 1rem;
+        right: 1.2rem;
+        font-size: 0.9rem;
+        cursor: pointer;
+        color: #fff;
+        text-shadow: 0 0 6px #000;
+        padding: 0.3rem 0.6rem;
+        border-radius: 999px;
+        border: 2px solid rgba(255, 255, 255, 0.7);
+        background: rgba(0, 0, 0, 0.7);
+      }
+
+      .fullscreen-inner {
+        width: 100%;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 1rem;
+      }
+
+      .fullscreen-inner img,
+      .fullscreen-inner iframe {
+        max-width: 100%;
+        max-height: 100%;
+        object-fit: contain;
+        border-radius: 8px;
+        border: none;
+        background: #000;
+      }
+
+      .fullscreen-inner iframe {
+        width: 100%;
+        height: 100%;
+      }
+
+      @media (max-width: 800px) {
+        .viewer-layout {
+          flex-direction: column;
+        }
+
+        .splitter {
+          display: none !important;
+        }
+
+        .viewer-layout.split-active .viewer-side {
+          max-width: 100%;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- MENU -->
+    <button id="menuButton" class="menu-button" aria-label="Open menu">
+      <img src="/assets/menu.png" alt="Menu" />
+    </button>
+
+    <div id="sidebarOverlay" class="sidebar-overlay">
+      <div class="sidebar">
+        <div id="sidebarClose" class="sidebar-close">X</div>
+        <div class="sidebar-title">ZORD LINKS</div>
+        <ul class="sidebar-menu">
+          <li><a href="/assets-page/zordinals-theory.html">ZORDINALTHEORY</a></li>
+          <li>
+            <a href="/assets-page/index.html">ZORDINALS VIEWER</a>
+          </li>
+          <li>
+            <a href="/assets-page/explore.html">EXPLORE ZORDS</a>
+          </li>
+          <li>
+            <a href="/assets-page/znode-status.html">ZNODE STATUS</a>
+          </li>
+          <li><a href="/assets-page/dev-cli.html">CLI CONTROLS</a></li>
+          <li><a href="/assets-page/info.html">INFO</a></li>
+          <li>
+            <a href="https://zord.cash" target="_blank">ZORD.CASH</a>
+          </li>
+          <li>
+            <a href="https://x.com/Zordtoshi" target="_blank">ZORDTOSHI X</a>
+          </li>
+          <li>
+            <a href="https://github.com/Zordtoshi" target="_blank"
+              >GITHUB</a
+            >
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- FULLSCREEN OVERLAY -->
+    <div id="fullscreenOverlay" class="fullscreen-overlay">
+      <div id="fullscreenClose" class="fullscreen-close">X</div>
+      <div class="fullscreen-inner">
+        <img id="fullscreenImage" style="display: none;" />
+        <iframe
+          id="fullscreenFrame"
+          style="display: none;"
+          sandbox="allow-same-origin"
+        ></iframe>
+      </div>
+    </div>
+
+    <div class="app-container">
+      <div class="content-card">
+        <div class="hero">
+          <div class="hero-logo-wrap">
+            <div class="round-logo">
+              <img src="/assets/logo.jpg" alt="ZORD Logo" />
+            </div>
+            <div class="site-title-small">ZORDINALS VIEWER</div>
+          </div>
+
+          <h1 class="main-title">ZORDINALS</h1>
+          <p class="subtitle">View Zimmutable Zords by inscription TXID</p>
+
+          <div
+            class="search-wrapper"
+            style="
+              width: 100%;
+              display: flex;
+              flex-direction: column;
+              align-items: center;
+            "
+          >
+            <form id="searchForm" class="search-bar">
+              <input
+                id="txidInput"
+                class="search-input"
+                placeholder="Enter inscription TXID (e.g. txid...i0)"
+                autocomplete="off"
+              />
+              <button type="submit" class="search-button">LOAD</button>
+            </form>
+            <div class="helper-text">
+              If the content exists in <code>/Zords</code> it loads from
+              there, otherwise it is decoded via chain.
+            </div>
+          </div>
+        </div>
+
+        <div id="viewerLayout" class="viewer-layout">
+          <div class="viewer-main" id="viewerMain">
+            <div class="viewer-toolbar">
+              <div class="viewer-meta">
+                TXID: <span id="metaTxid">–</span>
+              </div>
+              <div class="viewer-meta">
+                TYPE: <span id="metaType">–</span>
+              </div>
+              <button id="downloadBtn" class="viewer-pill" disabled>
+                DOWNLOAD
+              </button>
+              <button id="fullscreenBtn" class="viewer-pill" disabled>
+                FULLSCREEN
+              </button>
+              <button id="infoBtn" class="viewer-pill" disabled>INFO</button>
+            </div>
+            <div id="viewerContent" class="viewer-content">
+              <span style="font-size: 0.6rem; opacity: 0.8;"
+                >No inscription loaded yet.</span
+              >
+            </div>
+          </div>
+
+          <div id="splitter" class="splitter"></div>
+
+          <div class="viewer-side" id="viewerSide">
+            <div class="viewer-side-header">INSCRIPTION INFO TERMINAL</div>
+            <div class="viewer-side-sub">
+              Output from <code>inspect.js</code>. Scrollable & copyable.
+            </div>
+            <div class="viewer-side-actions">
+              <button id="refreshInfoBtn" class="side-button" disabled>
+                REFRESH
+              </button>
+              <button id="copyInfoBtn" class="side-button" disabled>
+                COPY RAW
+              </button>
+            </div>
+            <div id="viewerSideBody" class="viewer-side-body">
+              Info terminal is closed.
+            </div>
+          </div>
+        </div>
+
+        <div id="statusBar" class="status-bar"></div>
+
+        <div class="footer">
+          © <span id="yearSpan"></span> Zord.cash • Zimmutable Zords
+        </div>
+      </div>
+    </div>
+
+    <script>
+      function $(id) {
+        return document.getElementById(id);
+      }
+
+      function setStatus(msg, isError) {
+        const statusBar = $('statusBar');
+        if (!statusBar) return;
+        statusBar.textContent = msg || '';
+        if (isError) statusBar.classList.add('error');
+        else statusBar.classList.remove('error');
+      }
+
+      // global state
+      let currentTxid = null; // genesis txid (from filename)
+      let currentDisplayId = null; // inscription id (txid+i0) typed by user
+      let currentFileUrl = null;
+      let currentFilename = null;
+      let currentContentType = null;
+      let currentInfoRawText = '';
+      let infoHasLoadedOnce = false;
+
+      function setupMenu() {
+        const menuButton = $('menuButton');
+        const overlay = $('sidebarOverlay');
+        const closeBtn = $('sidebarClose');
+
+        if (!menuButton || !overlay || !closeBtn) return;
+
+        const close = () => overlay.classList.remove('active');
+
+        menuButton.addEventListener('click', () => {
+          overlay.classList.add('active');
+        });
+
+        closeBtn.addEventListener('click', close);
+        overlay.addEventListener('click', (e) => {
+          if (e.target === overlay) close();
+        });
+      }
+
+      function renderContent(meta) {
+        const viewerLayout = $('viewerLayout');
+        const viewerContent = $('viewerContent');
+        const metaTxid = $('metaTxid');
+        const metaType = $('metaType');
+
+        document.body.classList.add('showing-content');
+        viewerLayout.classList.add('active');
+
+        currentTxid = meta.txid;
+        currentDisplayId = meta.requestTxid || meta.txid;
+        currentFileUrl = meta.url;
+        currentFilename = meta.filename;
+        currentContentType = meta.contentType || 'application/octet-stream';
+
+        metaTxid.textContent = currentDisplayId;
+        metaType.textContent = currentContentType;
+
+        viewerContent.innerHTML = '';
+
+        if (currentContentType.toLowerCase().startsWith('image/')) {
+          const img = document.createElement('img');
+          img.src = currentFileUrl;
+          img.alt = currentDisplayId;
+          viewerContent.appendChild(img);
+        } else {
+          const iframe = document.createElement('iframe');
+          iframe.src = currentFileUrl;
+          iframe.setAttribute('sandbox', 'allow-same-origin');
+          viewerContent.appendChild(iframe);
+        }
+
+        $('downloadBtn').disabled = false;
+        $('fullscreenBtn').disabled = false;
+        $('infoBtn').disabled = false;
+
+        currentInfoRawText = '';
+        infoHasLoadedOnce = false;
+        $('viewerSideBody').textContent = 'Info terminal is closed.';
+        $('refreshInfoBtn').disabled = true;
+        $('copyInfoBtn').disabled = true;
+      }
+
+      async function fetchInscription(txid) {
+        setStatus('Loading inscription...', false);
+
+        const res = await fetch('/api/inscription/' + encodeURIComponent(txid), {
+          cache: 'no-store',
+        });
+
+        if (!res.ok) {
+          const errText = await res.text().catch(() => '');
+          throw new Error('Failed to load inscription: ' + errText);
+        }
+
+        const data = await res.json();
+        if (!data || !data.url) {
+          throw new Error('Invalid inscription response');
+        }
+
+        const source = data.fromCache ? 'Zords cache' : 'chain decode';
+        setStatus('Loaded from ' + source + '.', false);
+        return data;
+      }
+
+      async function fetchInspectData(txid) {
+        setStatus('Loading inspect data...', false);
+
+        const res = await fetch('/api/inspect/' + encodeURIComponent(txid), {
+          cache: 'no-store',
+        });
+
+        if (!res.ok) {
+          const errText = await res.text().catch(() => '');
+          throw new Error('Failed to load inspect data: ' + errText);
+        }
+
+        const data = await res.json();
+
+        let rawText = '';
+        if (typeof data.rawText === 'string') {
+          rawText = data.rawText;
+        } else {
+          rawText = JSON.stringify(data, null, 2);
+        }
+
+        currentInfoRawText = rawText;
+        infoHasLoadedOnce = true;
+
+        const source = data.fromCache
+          ? 'cached /Zords/rawdata'
+          : 'fresh inspect.js output';
+        setStatus('Inspect data loaded from ' + source + '.', false);
+
+        return rawText;
+      }
+
+      function toggleInfoPanel() {
+        const viewerLayout = $('viewerLayout');
+        const infoBtn = $('infoBtn');
+        const viewerSideBody = $('viewerSideBody');
+        const refreshInfoBtn = $('refreshInfoBtn');
+        const copyInfoBtn = $('copyInfoBtn');
+
+        if (!viewerLayout.classList.contains('split-active')) {
+          viewerLayout.classList.add('split-active');
+          infoBtn.textContent = 'INFO (ON)';
+          viewerSideBody.textContent = 'Loading info...';
+
+          refreshInfoBtn.disabled = true;
+          copyInfoBtn.disabled = true;
+
+          if (!currentTxid) {
+            viewerSideBody.textContent = 'No TXID loaded.';
+            setStatus('Load an inscription first.', true);
+            return;
+          }
+
+          (async () => {
+            try {
+              const rawText = await fetchInspectData(currentTxid);
+              viewerSideBody.textContent = rawText;
+              refreshInfoBtn.disabled = false;
+              copyInfoBtn.disabled = false;
+            } catch (err) {
+              console.error(err);
+              viewerSideBody.textContent =
+                'Error loading inspect data: ' + err.message;
+              setStatus('Error loading inspect data.', true);
+            }
+          })();
+        } else {
+          viewerLayout.classList.remove('split-active');
+          infoBtn.textContent = 'INFO';
+          viewerSideBody.textContent = 'Info terminal is closed.';
+          setStatus('', false);
+        }
+      }
+
+      function setupSplitter() {
+        const viewerLayout = $('viewerLayout');
+        const viewerMain = $('viewerMain');
+        const viewerSide = $('viewerSide');
+        const splitter = $('splitter');
+
+        if (!viewerLayout || !viewerMain || !viewerSide || !splitter) return;
+
+        let dragging = false;
+
+        const startDrag = (e) => {
+          e.preventDefault();
+          dragging = true;
+        };
+
+        const stopDrag = () => {
+          dragging = false;
+        };
+
+        const doDrag = (e) => {
+          if (!dragging) return;
+          const rect = viewerLayout.getBoundingClientRect();
+          const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+          const x = clientX - rect.left;
+          const min = 0.2;
+          const max = 0.8;
+          let ratio = x / rect.width;
+          if (ratio < min) ratio = min;
+          if (ratio > max) ratio = max;
+
+          viewerMain.style.flex = '0 0 ' + (ratio * 100).toFixed(2) + '%';
+          viewerSide.style.flex = '0 0 ' + ((1 - ratio) * 100).toFixed(2) + '%';
+        };
+
+        splitter.addEventListener('mousedown', startDrag);
+        splitter.addEventListener('touchstart', startDrag, { passive: false });
+
+        window.addEventListener('mousemove', doDrag);
+        window.addEventListener('touchmove', doDrag, { passive: false });
+
+        window.addEventListener('mouseup', stopDrag);
+        window.addEventListener('mouseleave', stopDrag);
+        window.addEventListener('touchend', stopDrag);
+      }
+
+      // fullscreen overlay logic (no browser fullscreen API)
+      function setupFullscreenOverlay() {
+        const btn = $('fullscreenBtn');
+        const overlay = $('fullscreenOverlay');
+        const closeBtn = $('fullscreenClose');
+        const img = $('fullscreenImage');
+        const frame = $('fullscreenFrame');
+
+        if (!btn || !overlay || !closeBtn || !img || !frame) return;
+
+        const open = () => {
+          if (!currentFileUrl || !currentContentType) return;
+
+          img.style.display = 'none';
+          frame.style.display = 'none';
+
+          if (currentContentType.toLowerCase().startsWith('image/')) {
+            img.src = currentFileUrl;
+            img.alt = currentDisplayId || currentTxid || '';
+            img.style.display = 'block';
+            frame.removeAttribute('src');
+          } else {
+            frame.src = currentFileUrl;
+            frame.setAttribute('sandbox', 'allow-same-origin');
+            frame.style.display = 'block';
+            img.src = '';
+          }
+
+          overlay.classList.add('active');
+        };
+
+        const close = () => {
+          overlay.classList.remove('active');
+          img.src = '';
+          frame.removeAttribute('src');
+        };
+
+        btn.addEventListener('click', open);
+        closeBtn.addEventListener('click', close);
+        overlay.addEventListener('click', (e) => {
+          if (e.target === overlay) close();
+        });
+      }
+
+      document.addEventListener('DOMContentLoaded', () => {
+        const yearSpan = $('yearSpan');
+        if (yearSpan) {
+          yearSpan.textContent = new Date().getFullYear();
+        }
+
+        setupMenu();
+        setupSplitter();
+        setupFullscreenOverlay();
+
+        const searchForm = $('searchForm');
+        const txidInput = $('txidInput');
+        const downloadBtn = $('downloadBtn');
+        const infoBtn = $('infoBtn');
+        const refreshInfoBtn = $('refreshInfoBtn');
+        const copyInfoBtn = $('copyInfoBtn');
+        const viewerSideBody = $('viewerSideBody');
+
+        if (!searchForm || !txidInput) return;
+
+        searchForm.addEventListener('submit', async (e) => {
+          e.preventDefault();
+          const txid = txidInput.value.trim();
+          if (!txid) return;
+
+          setStatus('Loading inscription...', false);
+
+          try {
+            downloadBtn.disabled = true;
+            $('fullscreenBtn').disabled = true;
+            infoBtn.disabled = true;
+            refreshInfoBtn.disabled = true;
+            copyInfoBtn.disabled = true;
+            viewerSideBody.textContent = 'Info terminal is closed.';
+            currentInfoRawText = '';
+            infoHasLoadedOnce = false;
+
+            const meta = await fetchInscription(txid);
+            renderContent(meta);
+            setStatus('Inscription loaded.', false);
+          } catch (err) {
+            console.error(err);
+            setStatus('Error loading inscription: ' + err.message, true);
+          }
+        });
+
+        downloadBtn.addEventListener('click', () => {
+          if (!currentTxid || !currentFileUrl || !currentFilename) return;
+          const a = document.createElement('a');
+          a.href = currentFileUrl;
+          a.download = currentFilename;
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+        });
+
+        infoBtn.addEventListener('click', () => {
+          if (!currentTxid) {
+            setStatus('Load an inscription first.', true);
+            return;
+          }
+          toggleInfoPanel();
+        });
+
+        refreshInfoBtn.addEventListener('click', async () => {
+          if (!currentTxid) return;
+          refreshInfoBtn.disabled = true;
+          copyInfoBtn.disabled = true;
+          viewerSideBody.textContent = 'Refreshing info...';
+
+          try {
+            const rawText = await fetchInspectData(currentTxid);
+            viewerSideBody.textContent = rawText;
+            refreshInfoBtn.disabled = false;
+            copyInfoBtn.disabled = false;
+          } catch (err) {
+            console.error(err);
+            viewerSideBody.textContent =
+              'Error refreshing inspect data: ' + err.message;
+            setStatus('Error refreshing inspect data.', true);
+          }
+        });
+
+        copyInfoBtn.addEventListener('click', async () => {
+          if (!currentInfoRawText) return;
+          try {
+            await navigator.clipboard.writeText(currentInfoRawText);
+            setStatus('Inspect data copied to clipboard.', false);
+          } catch (e) {
+            setStatus('Clipboard copy failed.', true);
+          }
+        });
+      });
+    </script>
+  </body>
+</html>
