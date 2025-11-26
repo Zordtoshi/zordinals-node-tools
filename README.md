@@ -1,3 +1,19 @@
+
+<p align="center">
+  <a href="https://x.com/Zordtoshi" target="_blank">
+    <img src="https://unavatar.io/x/Zordtoshi"
+         alt="Zordtoshi on X"
+         width="120" />
+  </a>
+</p>
+
+<p align="center">
+  <a href="https://x.com/Zordtoshi" target="_blank">
+    <img src="https://img.shields.io/badge/Follow-@Zordtoshi-000000?style=for-the-badge&logo=x&logoColor=white"
+         alt="Follow @Zordtoshi on X" />
+  </a>
+</p>
+
 # Zordinals Viewer & ZNode Tools
 
 Zordinals Viewer is a **local, self‑hosted toolkit** for **Zcash full node runners**, featuring:
