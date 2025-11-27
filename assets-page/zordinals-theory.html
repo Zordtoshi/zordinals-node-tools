@@ -35,16 +35,6 @@
   .app-container {
     width: 100%;
     max-width: 900px;
-    .coming-soon {
-    margin-top: 1.5rem;
-    font-size: 0.6rem;
-    text-align: center;
-  }
-}
-  .p {
-    justify-content: center;
-    align-items: center;  
-    display: flex;
   }
 
   .content-card {
@@ -111,10 +101,7 @@
     font-size: 0.7rem;
     margin-bottom: 0.6rem; /* More space below titles */
     text-shadow: 2px 2px 4px #000;
-    color: #ffd700; 
-    justify-content: center;
-    align-items: center;  
-    display: flex;
+    color: #ffd700; /* Gold color to make titles stand out and draw the eye */
   }
 
   .mono {
@@ -295,16 +282,149 @@
     <div class="section">
       <div class="section-title">Zordinals — On-Chain Inscriptions for Zcash</div>
       <p>
-        <!-- You can add real content here later -->
+        Zordinals bring ordinal theory to Zcash — allowing you to inscribe images, text, files, and arbitrary digital artifacts directly onto the Zcash blockchain, permanently, immutably, and without relying on off-chain storage.
+      </p>
+      <p>
+        Think of them as NFTs with actual teeth: no servers, no IPFS links that disappear, no “metadata gateways,” no rug pulls via deleted images. Just raw, verifiable, forever-living data baked into the chain.
       </p>
     </div>
-    <div class="coming-soon">
-      COMING SOON: DETAILED OVERVIEW OF ZORDINALS!
+
+    <div class="section">
+      <div class="section-title">What Are Zordinals?</div>
+      <p>
+        Zordinals apply Bitcoin’s ordinal theory to Zcash’s transparent UTXO model:
+      </p>
+      <ul style="margin-top: 0.4rem;">
+        <li>Every satoshi-like unit of ZEC inside a UTXO can be uniquely numbered.</li>
+        <li>Those individually trackable units can be assigned data (“inscriptions”).</li>
+        <li>Once inscribed, the data becomes a permanent part of the blockchain, because it's committed inside the raw transaction.</li>
+        <li>Ownership of a Zordinal = ownership of the UTXO that contains the inscribed satoshis.</li>
+      </ul>
+      <p>
+        The result?
+      </p>
+      <ul style="margin-top: 0.4rem;">
+        <li>• Fully on-chain NFTs</li>
+        <li>• Permanently stored</li>
+        <li>• Never broken by external links</li>
+        <li>• No centralized hosts</li>
+        <li>• No IPFS pinning required</li>
+      </ul>
+      <p>
+        If an “NFT” calls to off-chain data: It’s not a Zord. It’s just… a JPEG with commitment issues.
+      </p>
+    </div>
+
+    <div class="section">
+      <div class="section-title">Immutability & On-Chain Guarantees</div>
+      <p>
+        Zordinals data is inserted directly into a Zcash raw transaction. This means:
+      </p>
+      <ul style="margin-top: 0.4rem;">
+        <li>• It is hashed into the block.</li>
+        <li>• It is validated by every node.</li>
+        <li>• It can’t be changed, removed, or overwritten.</li>
+        <li>• It does not depend on any third-party storage.</li>
+      </ul>
+      <p>
+        As long as Zcash exists, your Zordinals exist.
+      </p>
+    </div>
+
+    <div class="section">
+      <div class="section-title">How Zordinals Store Data (Simple Explanation)</div>
+      <p>
+        Zcash has limits on how much data can fit into a single transaction field, so inscriptions use a clever trick:
+      </p>
+      <ul style="margin-top: 0.4rem;">
+        <li>1. Your data (image/text/etc) is chunked — It is split into multiple small pieces.</li>
+        <li>2. Each chunk is encoded — We use a lightweight, compact Base64-like encoding for safe insertion.</li>
+        <li>3. Chunks are written into specific locations inside one or more UTXOs — Each chunk is stored inside the ScriptSig / script fields of raw transactions.</li>
+        <li>4. “Link markers” identify the sequence — Each inscription has markers that indicate: Start of inscription, Middle chunks, End of inscription, What order they belong in, What inscription ID they are part of. Think of it like LEGO blocks with matching stickers.</li>
+        <li>5. Indexers can reconstruct the inscription perfectly — By scanning the chain, reading the chunks in order, and reassembling them.</li>
+      </ul>
+      <p>
+        Nothing lives off-chain. Everything needed is inside the blockchain itself.
+      </p>
+    </div>
+
+    <div class="section">
+      <div class="section-title">How a Zordinal Is Created (High-Level)</div>
+      <p>
+        A special P2SH output is constructed to hold the inscription marker.
+      </p>
+      <p>
+        The inscription data (chunked) is embedded into ScriptSigs across one or more inputs.
+      </p>
+      <p>
+        A funding transaction (“TX0”) prepares the structure.
+      </p>
+      <p>
+        A reveal transaction publishes the completed inscription on-chain.
+      </p>
+      <p>
+        From that point forward: The UTXO becomes the “holder” of the Zordinal. Sending the Zordinal is simply spending that specific UTXO.
+      </p>
+    </div>
+
+    <div class="section">
+      <div class="section-title">Why Zordinals?</div>
+      <ul style="margin-top: 0.4rem;">
+        <li>• Permanence — Zordinals never disappear! Even if every server and IPFS gateway went offline.</li>
+        <li>• Verifiability — Every byte is stored on-chain and validated by consensus rules.</li>
+        <li>• Independence — No dependency on centralized hosting.</li>
+        <li>• Simplicity — You own the UTXO, you own the Zord. No smart contracts, no complex state machines, no magical indexes.</li>
+        <li>• Transparency — Since inscriptions rely on Zcash's transparent UTXOs (not shielded), they are easy to scan, index, and verify.</li>
+      </ul>
+    </div>
+
+    <div class="section">
+      <div class="section-title">What Counts as a “Real” Zordinal?</div>
+      <p>
+        A genuine Zordinal must:
+      </p>
+      <ul style="margin-top: 0.4rem;">
+        <li>• Store 100% of its data ON-CHAIN</li>
+        <li>• Use valid Zordinals encoding and markers</li>
+        <li>• Not rely on ANY external resource (IPFS, HTTP URLs, metadata servers, etc.)</li>
+        <li>• Follow the sequential inscription data chunk structure</li>
+      </ul>
+      <p>
+        If it points off-chain? It’s not a Zordinal. It’s cosplay.
+      </p>
+    </div>
+
+    <div class="section">
+      <div class="section-title">Closing Thoughts</div>
+      <p>
+        Zordinals bring the best ideas of ordinal theory to Zcash, delivering:
+      </p>
+      <ul style="margin-top: 0.4rem;">
+        <li>• On-chain permanence</li>
+        <li>• True digital ownership</li>
+        <li>• Fully decentralized NFTs</li>
+        <li>• A standardized, clean, verifiable format</li>
+      </ul>
+      <p>
+        And YES! Your images are actually stored inside the blockchain.
+      </p>
+      <p>
+        No more disappearing artwork. No more 404 NFTs. No more ghosted metadata.
+      </p>
+      <p>
+        Just pure, immutable Zcash.
+      </p>
+    </div>
+
+    <div class="section" style="text-align: center; margin-top: 1rem; font-size: 0.7rem; text-shadow: 2px 2px 4px #000;">
+      Signed by Zordtoshi
     </div>
 
     <div class="footer">
       © <span id="yearSpan"></span> Zord.cash • Zimmutable Zords
     </div>
+  </div>
+</div>
 
 <script>
   function $(id) {
