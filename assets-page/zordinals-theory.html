@@ -280,9 +280,9 @@
     </div>
 
     <div class="section">
-      <div class="section-title">Zordinals — On-Chain Inscriptions for Zcash</div>
+      <div class="section-title">Zordinals On-Chain Inscriptions for Zcash</div>
       <p>
-        Zordinals bring ordinal theory to Zcash — allowing you to inscribe images, text, files, and arbitrary digital artifacts directly onto the Zcash blockchain, permanently, immutably, and without relying on off-chain storage.
+        Zordinals bring ordinal theory to Zcash allowing you to inscribe images, text, files, and arbitrary digital artifacts directly onto the Zcash blockchain, permanently, immutably, and without relying on off-chain storage.
       </p>
       <p>
         Think of them as NFTs with actual teeth: no servers, no IPFS links that disappear, no “metadata gateways,” no rug pulls via deleted images. Just raw, verifiable, forever-living data baked into the chain.
@@ -339,7 +339,7 @@
       <ul style="margin-top: 0.4rem;">
         <li>1. Your data (image/text/etc) is chunked — It is split into multiple small pieces.</li>
         <li>2. Each chunk is encoded — We use a lightweight, compact Base64-like encoding for safe insertion.</li>
-        <li>3. Chunks are written into specific locations inside one or more UTXOs — Each chunk is stored inside the ScriptSig / script fields of raw transactions.</li>
+        <li>3. Chunks are written into specific locations inside one or more UTXOs. Each chunk is stored inside the ScriptSig / script fields of raw transactions.</li>
         <li>4. “Link markers” identify the sequence — Each inscription has markers that indicate: Start of inscription, Middle chunks, End of inscription, What order they belong in, What inscription ID they are part of. Think of it like LEGO blocks with matching stickers.</li>
         <li>5. Indexers can reconstruct the inscription perfectly — By scanning the chain, reading the chunks in order, and reassembling them.</li>
       </ul>
@@ -453,4 +453,5 @@
   });
 </script>  </body>
 </html>
+
 
